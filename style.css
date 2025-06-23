@@ -1,0 +1,46 @@
+/*
+Theme Name: Fisica Virtual Tema
+Author: Jeferson Alves
+Description: Um tema personalizado para o WordPress.
+Version: 1.0
+*/
+
+/* Estilos personalizados podem ser adicionados aqui */
+body {
+    /*background-color: #212529;
+    color: white;*/
+    background-color: white;
+    color: black;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif
+        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
+    ;
+}
+
+.fundoImagem {
+    /*background-color: #343A40;*/
+    background-image: url('https://labvirtual.fisica.ufes.br/wp-content/themes/temaFisicaVirtual/img/arte_header.png'); /* Caminho relativo para sua imagem */
+    background-size: cover; /* Ajusta a imagem para cobrir todo o fundo da div */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede a repetição da imagem */
+    color: #fff; /* Define a cor do texto como branca, você pode ajustar conforme necessário */
+}
+
+.blog-header-logo {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif
+        /*rtl:Amiri, Georgia, "Times New Roman", serif*/
+    ;
+    font-size: 2.25rem;
+}
+
+.strong-text1 {
+    /*color: #6EA8FE;*/
+    color: #3e8bff;
+}
+.strong-text2 {
+    /*color: #75b798;*/
+    color: #26b874;
+}
+
