@@ -29,17 +29,17 @@ get_header();
                 class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative bg-body-secondary">
                 <div class="col p-4 d-flex flex-column position-static">
                     <strong class="d-inline-block mb-2 strong-text1">último vídeo</strong>
-                    <h3 class="mb-0">Coeficiente de Atrito Estático</h3>
-                    <div class="mb-1 text-secondary">Set 16</div>
-                    <p class="card-text mb-auto">Neste vídeo tratamos do experimento de Coeficiente de atrito estático.
+                    <h3 class="mb-0">Movimento Retilíneo Uniforme (MRU)</h3>
+                    <div class="mb-1 text-secondary">Jun 27</div>
+                    <p class="card-text mb-auto">Neste vídeo tratamos do experimento de Movimento Retilíneo Uniforme.
                     </p>
-                    <a href="https://youtu.be/wX_FBcJCB9g?si=AZEZEO2wnwyOhx_j"
+                    <a href="https://www.youtube.com/watch?v=GyyanJ4lswY"
                         class="icon-link gap-1 icon-link-hover stretched-link">
                         Continue assistindo
                     </a>
                 </div>
                 <div class="ratio ratio-21x9">
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/zeWTHViCpss?si=_7OOUHsKKOxP2TLB"
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/GyyanJ4lswY?si=QC9PBgg_2oGEd6dj
                         title="YouTube video player" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
