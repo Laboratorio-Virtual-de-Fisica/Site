@@ -26,11 +26,11 @@ get_header();
 // Configuração das simulações próprias
 const minhasSimulacoes = [
     {
-        nome: "Pêndulo Simples",
-        pasta: "pendulo-simples",
+        nome: "Cinemática Unidimensional",
+        pasta: "cinematica_unidimensional",
         arquivo: "index.html",
         imagem: "thumb.png",
-        descricao: "Simulação interativa de um pêndulo simples com controles de comprimento, gravidade e ângulo inicial"
+        descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo."
     },
     // Adicione novas simulações aqui seguindo o mesmo padrão
 ];
