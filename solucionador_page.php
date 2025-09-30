@@ -13,8 +13,45 @@ get_header();
       </ol>
    </nav>
 
+   <!-- Menu de Navegação das Simulações -->
+   <div class="mb-4">
+      <div class="row">
+         <div class="col-12">
+            <div class="card border-0 bg-light">
+               <div class="card-body p-3">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between">
+                     <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <i class="bi bi-grid-3x3-gap-fill me-2 text-primary" style="font-size: 1.2rem;"></i>
+                        <h6 class="mb-0 text-muted">Categorias:</h6>
+                     </div>
+                     <div class="d-flex flex-wrap gap-2" id="menu-categorias">
+                        <!-- Categorias serão geradas automaticamente -->
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
    <!-- Seção das Minhas Simulações -->
    <div class="mb-5">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+         <h5 class="mb-0">
+            <span id="titulo-secao">Todas as Simulações</span>
+            <small class="text-muted ms-2">(<span id="contador-simulacoes">0</span> simulações)</small>
+         </h5>
+         <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+               <i class="bi bi-sort-down me-1"></i>Ordenar
+            </button>
+            <ul class="dropdown-menu">
+               <li><a class="dropdown-item" href="#" onclick="ordenarSimulacoes('nome')">Por Nome</a></li>
+               <li><a class="dropdown-item" href="#" onclick="ordenarSimulacoes('categoria')">Por Categoria</a></li>
+            </ul>
+         </div>
+      </div>
+      
       <div class="row g-3" id="minhas-simulacoes">
          <!-- As simulações serão carregadas aqui via JavaScript -->
       </div>
@@ -23,23 +60,94 @@ get_header();
 </div>
 
 <script>
-// Configuração das simulações próprias
 const minhasSimulacoes = [
     {
         nome: "Cinemática Unidimensional",
         pasta: "cinematica_unidimensional",
         arquivo: "index.html",
         imagem: "thumb.png",
-        descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo."
+        descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo.",
+        categoria: "Mecânica"
     },
-    // Adicione novas simulações aqui seguindo o mesmo padrão
 ];
 
-// Função para carregar as simulações próprias
-function carregarMinhasSimulacoes() {
-    const container = document.getElementById('minhas-simulacoes');
+let simulacoesFiltradas = [...minhasSimulacoes];
+let categoriaAtiva = 'todas';
+
+// Função para obter categorias únicas
+function obterCategorias() {
+    const categorias = [...new Set(minhasSimulacoes.map(sim => sim.categoria))];
+    return ['Todas', ...categorias.sort()];
+}
+
+function criarMenuCategorias() {
+    const container = document.getElementById('menu-categorias');
+    const categorias = obterCategorias();
     
-    minhasSimulacoes.forEach(simulacao => {
+    categorias.forEach(categoria => {
+        const botao = document.createElement('button');
+        botao.className = categoria === 'Todas' ? 'btn btn-primary btn-sm' : 'btn btn-outline-primary btn-sm';
+        botao.textContent = categoria;
+        botao.onclick = () => filtrarPorCategoria(categoria);
+        botao.id = `btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`;
+        container.appendChild(botao);
+    });
+}
+
+function filtrarPorCategoria(categoria) {
+    document.querySelectorAll('#menu-categorias button').forEach(btn => {
+        btn.className = 'btn btn-outline-primary btn-sm';
+    });
+    document.getElementById(`btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`).className = 'btn btn-primary btn-sm';
+    
+    if (categoria === 'Todas') {
+        simulacoesFiltradas = [...minhasSimulacoes];
+        categoriaAtiva = 'todas';
+    } else {
+        simulacoesFiltradas = minhasSimulacoes.filter(sim => sim.categoria === categoria);
+        categoriaAtiva = categoria;
+    }
+    
+    document.getElementById('titulo-secao').textContent = 
+        categoria === 'Todas' ? 'Todas as Simulações' : `Simulações - ${categoria}`;
+    document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
+    
+    carregarSimulacoes();
+}
+
+// Função para ordenar simulações
+function ordenarSimulacoes(tipo) {
+    if (tipo === 'nome') {
+        simulacoesFiltradas.sort((a, b) => a.nome.localeCompare(b.nome));
+    } else if (tipo === 'categoria') {
+        simulacoesFiltradas.sort((a, b) => {
+            if (a.categoria === b.categoria) {
+                return a.nome.localeCompare(b.nome);
+            }
+            return a.categoria.localeCompare(b.categoria);
+        });
+    }
+    carregarSimulacoes();
+}
+
+// Função para carregar as simulações (atualizada)
+function carregarSimulacoes() {
+    const container = document.getElementById('minhas-simulacoes');
+    container.innerHTML = '';
+    
+    if (simulacoesFiltradas.length === 0) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                    <h6 class="text-muted mt-3">Nenhuma simulação encontrada nesta categoria</h6>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    simulacoesFiltradas.forEach(simulacao => {
         const col = document.createElement('div');
         col.className = 'col-12 col-sm-6 col-lg-4';
         
@@ -52,7 +160,10 @@ function carregarMinhasSimulacoes() {
                      style="height: 200px; object-fit: cover;" 
                      onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbSBuw6NvIGVuY29udHJhZGE8L3RleHQ+Cjwvc3ZnPgo='">
                 <div class="card-body d-flex flex-column">
-                    <h6 class="card-title text-center">${simulacao.nome}</h6>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="card-title mb-0">${simulacao.nome}</h6>
+                        <span class="badge bg-secondary small">${simulacao.categoria}</span>
+                    </div>
                     <p class="card-text small text-muted flex-grow-1">${simulacao.descricao}</p>
                     <div class="text-center mt-auto">
                         <span class="badge bg-primary">Interativo</span>
@@ -99,8 +210,13 @@ function abrirSimulacaoDirecta(url, nome) {
     }
 }
 
-// Carregar simulações quando a página carregar
-document.addEventListener('DOMContentLoaded', carregarMinhasSimulacoes);
+// Inicializar quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    criarMenuCategorias();
+    simulacoesFiltradas = [...minhasSimulacoes];
+    document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
+    carregarSimulacoes();
+});
 </script>
 
 <style>
@@ -132,6 +248,43 @@ document.addEventListener('DOMContentLoaded', carregarMinhasSimulacoes);
    .card-body small {
       font-size: 0.75rem;
       margin-top: 0.25rem;
+   }
+
+   /* Estilos do menu */
+   #menu-categorias {
+      gap: 0.5rem;
+   }
+
+   #menu-categorias button {
+      transition: all 0.2s ease-in-out;
+   }
+
+   #menu-categorias button:hover {
+      transform: translateY(-1px);
+   }
+
+   /* Responsividade do menu */
+   @media (max-width: 768px) {
+      #menu-categorias {
+         justify-content: center;
+         width: 100%;
+      }
+      
+      .d-flex.flex-wrap.align-items-center.justify-content-between {
+         flex-direction: column;
+         align-items: stretch !important;
+      }
+   }
+
+   /* Badge de categoria no card */
+   .badge.bg-secondary {
+      font-size: 0.7rem;
+      background-color: #6c757d !important;
+   }
+
+   /* Animação suave para troca de conteúdo */
+   #minhas-simulacoes {
+      min-height: 300px;
    }
 </style>
 
