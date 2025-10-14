@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador: Encontro entre Partículas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #f5f5f5;
+        padding: 2rem;
+        color: #333;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .inputs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.9rem;
+      }
+      input[type="number"] {
+        padding: 0.25rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 6rem;
+      }
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background: #333;
+        color: white;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      #animacao {
+        position: relative;
+        height: 100px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+      .bola {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+      #bola1 {
+        background: #1f77b4;
+        top: 15px;
+      }
+      #bola2 {
+        background: #d62728;
+        top: 55px;
+      }
+      canvas {
+        background: white;
+        border: 1px solid #ccc;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simulador: Encontro entre Partículas</h1>
+
+    <div class="inputs">
+      <label
+        >Posição Inicial 1 (m)
+        <input type="number" id="s1" value="0" />
+      </label>
+      <label
+        >Velocidade 1 (m/s)
+        <input type="number" id="v1" value="2" />
+      </label>
+      <label
+        >Posição Inicial 2 (m)
+        <input type="number" id="s2" value="10" />
+      </label>
+      <label
+        >Velocidade 2 (m/s)
+        <input type="number" id="v2" value="-1" />
+      </label>
+      <label
+        >Duração (s)
+        <input type="number" id="duracao" value="10" />
+      </label>
+    </div>
+
+    <button onclick="iniciarSimulacao()">Iniciar</button>
+    <button onclick="reiniciar()">Reiniciar</button>
+
+    <div id="animacao">
+      <div id="bola1" class="bola"></div>
+      <div id="bola2" class="bola"></div>
+    </div>
+
+    <canvas id="grafico"></canvas>
+
+    <script>
+      let intervalo = null;
+      let chart = null;
+      let tempo = [];
+      let pos1 = [];
+      let pos2 = [];
+      let simulando = false;
+
+      function iniciarSimulacao() {
+        // Se já está simulando, não reinicia
+        if (simulando) return;
+        simulando = true;
+
+        // Captura dos dados
+        const s1_0 = parseFloat(document.getElementById("s1").value);
+        const v1 = parseFloat(document.getElementById("v1").value);
+        const s2_0 = parseFloat(document.getElementById("s2").value);
+        const v2 = parseFloat(document.getElementById("v2").value);
+        const duracao = parseFloat(document.getElementById("duracao").value);
+
+        const bola1 = document.getElementById("bola1");
+        const bola2 = document.getElementById("bola2");
+
+        // Zera variáveis e gráfico
+        reiniciar(false);
+
+        tempo = [];
+        pos1 = [];
+        pos2 = [];
+
+        let t = 0;
+        const dt = 0.1;
+        const escala = 10; // pixels por metro
+
+        chart = criarGrafico();
+
+        intervalo = setInterval(() => {
+          if (t > duracao) {
+            pararSimulacao();
+            return;
+          }
+
+          const s1 = s1_0 + v1 * t;
+          const s2 = s2_0 + v2 * t;
+
+          tempo.push(t.toFixed(1));
+          pos1.push(s1);
+          pos2.push(s2);
+
+          bola1.style.left = `${s1 * escala}px`;
+          bola2.style.left = `${s2 * escala}px`;
+
+          atualizarGrafico(chart, tempo, pos1, pos2);
+
+          // Encontro detectado
+          if (Math.abs(s1 - s2) < 0.1) {
+            pararSimulacao();
+            alert(
+              `As partículas se encontraram em t = ${t.toFixed(
+                2
+              )} s, posição = ${s1.toFixed(2)} m`
+            );
+            return;
+          }
+
+          t += dt;
+        }, 100);
+      }
+
+      function criarGrafico() {
+        const ctx = document.getElementById("grafico");
+        return new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Partícula 1 (m)",
+                data: [],
+                borderColor: "#1f77b4",
+                fill: false,
+                tension: 0.2,
+              },
+              {
+                label: "Partícula 2 (m)",
+                data: [],
+                borderColor: "#d62728",
+                fill: false,
+                tension: 0.2,
+              },
+            ],
+          },
+          options: {
+            animation: false,
+            responsive: true,
+            scales: {
+              x: {
+                title: { display: true, text: "Tempo (s)" },
+              },
+              y: {
+                title: { display: true, text: "Posição (m)" },
+              },
+            },
+          },
+        });
+      }
+
+      function atualizarGrafico(chart, tempo, pos1, pos2) {
+        chart.data.labels = tempo;
+        chart.data.datasets[0].data = pos1;
+        chart.data.datasets[1].data = pos2;
+        chart.update("none");
+      }
+
+      function pararSimulacao() {
+        clearInterval(intervalo);
+        intervalo = null;
+        simulando = false;
+      }
+
+      function reiniciar(destroiGrafico = true) {
+        pararSimulacao();
+
+        // Zera posições
+        document.getElementById("bola1").style.left = "0px";
+        document.getElementById("bola2").style.left = "0px";
+
+        // Zera arrays
+        tempo = [];
+        pos1 = [];
+        pos2 = [];
+
+        // Destroi gráfico se existir
+        if (chart && destroiGrafico) {
+          chart.destroy();
+          chart = null;
+        }
+
+        simulando = false;
+      }
+    </script>
+  </body>
+</html>
