@@ -3,6 +3,11 @@
  * Template Name: Gerencia 
  */ 
 
+// Bloqueia a página: se não estiver logado, o WP manda para a tela de login e retorna aqui
+if ( ! is_user_logged_in() ) {
+    auth_redirect(); // redireciona para /wp-login.php?redirect_to=<esta_pagina>
+}
+
 get_header();
 
 // Configurações do banco de dados 
