@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Pêndulo Simples</title>
+    <title>Pêndulo Simples</title>
     <style>
         * {
             margin: 0;
@@ -16,32 +16,71 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 20px;
             color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .header {
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 0;
+            padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .header h1 {
             color: #4a5568;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .formula-box {
+            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .formula-box h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .formula {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+            margin: 10px 0;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .formula-description {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
+            margin-bottom: 20px;
         }
 
         .controls-panel {
@@ -49,29 +88,24 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            max-width: 800px;
-            width: 100%;
         }
 
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+        .controls-panel h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
         }
 
         .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 20px;
         }
 
         .control-group label {
+            display: block;
             font-weight: 600;
             color: #4a5568;
             font-size: 0.9rem;
+            margin-bottom: 8px;
         }
 
         .control-group input[type="range"] {
@@ -94,36 +128,35 @@
         }
 
         .control-group input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
         }
 
         .value-display {
             background: #f7fafc;
-            padding: 4px 12px;
+            padding: 8px 12px;
             border-radius: 8px;
             font-weight: 600;
             color: #2d3748;
-            min-width: 60px;
             text-align: center;
             border: 2px solid #e2e8f0;
+            margin-top: 5px;
         }
 
         .button-group {
             display: flex;
             gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         button {
-            padding: 12px 24px;
+            flex: 1;
+            padding: 12px;
             font-size: 1rem;
             font-weight: 600;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 120px;
         }
 
         .btn-primary {
@@ -143,7 +176,6 @@
 
         .btn-secondary:hover {
             background: #4a5568;
-            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -153,7 +185,45 @@
 
         .btn-danger:hover {
             background: #e53e3e;
-            transform: translateY(-2px);
+        }
+
+        .data-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-panel h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .data-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .data-item label {
+            display: block;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .data-item .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
         }
 
         .canvas-container {
@@ -161,206 +231,442 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .canvas-container h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
         }
 
         canvas {
             border: 3px solid #e2e8f0;
             border-radius: 10px;
-            max-width: 100%;
-            height: auto;
+            display: block;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .graph-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-container h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
         }
 
         .info-panel {
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
-            max-width: 800px;
-            width: 100%;
-            backdrop-filter: blur(10px);
         }
 
         .info-panel h3 {
             color: #4a5568;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
         }
 
-        .info-panel p {
+        .info-panel ul {
             color: #718096;
-            line-height: 1.6;
-            font-size: 0.9rem;
+            line-height: 1.8;
+            margin-left: 20px;
+        }
+
+        .info-panel li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (max-width: 768px) {
-            .controls {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .formula {
+                font-size: 1.2rem;
+            }
+
+            .data-grid {
                 grid-template-columns: 1fr;
             }
 
             .button-group {
                 flex-direction: column;
-                align-items: center;
-            }
-
-            button {
-                width: 100%;
-                max-width: 200px;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>🔄 Simulador de Pêndulo Simples</h1>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Simulador de Pêndulo Simples</h1>
+            <p>Experimento Interativo de Física - Movimento Harmônico Simples</p>
+        </div>
 
-    <div class="main-container">
-        <div class="controls-panel">
-            <div class="controls">
+        <div class="formula-box">
+            <h3>Período do Pêndulo Simples</h3>
+            <div class="formula">T = 2π√(L/g)</div>
+            <div class="formula-description">
+                <strong>Onde:</strong> T = Período (s) | L = Comprimento do fio (m) | g = Aceleração da gravidade
+                (m/s²) | π ≈ 3,14159
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="controls-panel">
+                <h3>Controles da Simulação</h3>
+
                 <div class="control-group">
-                    <label>Comprimento (m)</label>
-                    <input type="range" id="comprimento" min="0.5" max="3" step="0.1" value="1.5"
+                    <label>Comprimento do Fio (L)</label>
+                    <input type="range" id="comprimento" min="0.5" max="3" step="0.1" value="2.0"
                         oninput="atualizaValores()">
-                    <div class="value-display" id="valComprimento">1.5</div>
+                    <div class="value-display" id="valComprimento">1.5 m</div>
                 </div>
 
                 <div class="control-group">
-                    <label>Gravidade (m/s²)</label>
+                    <label>Aceleração da Gravidade (g)</label>
                     <input type="range" id="gravidade" min="1" max="20" step="0.1" value="9.8"
                         oninput="atualizaValores()">
-                    <div class="value-display" id="valGravidade">9.8</div>
+                    <div class="value-display" id="valGravidade">9.8 m/s²</div>
                 </div>
 
                 <div class="control-group">
-                    <label>Ângulo Inicial (°)</label>
-                    <input type="range" id="angulo" min="5" max="60" step="1" value="30" oninput="atualizaValores()">
-                    <div class="value-display" id="valAngulo">30</div>
+                    <label>Ângulo Inicial (θ₀)</label>
+                    <input type="range" id="angulo" min="0" max="15" step="1" value="10" oninput="atualizaValores()">
+                    <div class="value-display" id="valAngulo">30°</div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="iniciarSimulacao()" id="btnIniciar">▶️ Iniciar</button>
+                    <button class="btn-secondary" onclick="pausarSimulacao()">⏸️ Pausar</button>
+                    <button class="btn-danger" onclick="pararSimulacao()">⏹️ Parar</button>
                 </div>
             </div>
 
-            <div class="button-group">
-                <button class="btn-primary" onclick="iniciarSimulacao()" id="btnIniciar">▶️ Iniciar</button>
-                <button class="btn-secondary" onclick="pausarSimulacao()" id="btnPausar">⏸️ Pausar</button>
-                <button class="btn-danger" onclick="pararSimulacao()">⏹️ Parar</button>
+            <div class="data-panel">
+                <h3>Dados Calculados</h3>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <label>Período (T)</label>
+                        <div class="value" id="periodo">2.46 s</div>
+                    </div>
+                    <div class="data-item">
+                        <label>Frequência (f)</label>
+                        <div class="value" id="frequencia">0.41 Hz</div>
+                    </div>
+                    <div class="data-item">
+                        <label>Frequência Angular (ω)</label>
+                        <div class="value" id="omega">2.56 rad/s</div>
+                    </div>
+                    <div class="data-item">
+                        <label>Tempo Decorrido</label>
+                        <div class="value" id="tempo">0.00 s</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="canvas-container">
-            <canvas id="canvas" width="600" height="400"></canvas>
+            <h3>Visualização do Pêndulo</h3>
+            <canvas id="canvasPendulo" width="700" height="400"></canvas>
+        </div>
+
+        <div class="graph-container">
+            <h3>Gráfico: Ângulo × Tempo</h3>
+            <canvas id="canvasGrafico" width="700" height="300"></canvas>
         </div>
 
         <div class="info-panel">
-            <h3>📋 Sobre a Simulação</h3>
-            <p>
-                Este simulador demonstra o movimento de um pêndulo simples. Você pode ajustar o comprimento do fio,
-                a gravidade e o ângulo inicial para observar como esses parâmetros afetam o período de oscilação.
-                Para ângulos pequenos, o período é aproximadamente T = 2π√(L/g).
-            </p>
+            <h3>Conceitos Importantes</h3>
+            <ul>
+                <li><strong>Pêndulo Simples:</strong> Sistema composto por uma massa suspensa por um fio inextensível
+                    que oscila sob ação da gravidade.</li>
+                <li><strong>Período (T):</strong> Tempo necessário para completar uma oscilação completa (ida e volta).
+                </li>
+                <li><strong>Frequência (f):</strong> Número de oscilações por segundo. Calculada como f = 1/T.</li>
+                <li><strong>Frequência Angular (ω):</strong> Velocidade angular do movimento. Calculada como ω = 2π/T =
+                    √(g/L).</li>
+                <li><strong>Aproximação para Pequenos Ângulos:</strong> A fórmula T = 2π√(L/g) é válida para ângulos
+                    menores que 15°. Para ângulos maiores, há pequenas variações.</li>
+                <li><strong>Independência da Massa:</strong> O período do pêndulo não depende da massa do objeto, apenas
+                    do comprimento e da gravidade!</li>
+            </ul>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
+        const canvasPendulo = document.getElementById("canvasPendulo");
+        const ctxPendulo = canvasPendulo.getContext("2d");
+        const canvasGrafico = document.getElementById("canvasGrafico");
+        const ctxGrafico = canvasGrafico.getContext("2d");
 
         let t = 0;
         let rodando = false;
         let pausado = false;
         let animationId;
-        const origem = { x: canvas.width / 2, y: 50 };
+        const origem = { x: canvasPendulo.width / 2, y: 50 };
 
         let comprimento = 1.5;
         let gravidade = 9.8;
         let anguloInicial = 30 * Math.PI / 180;
+
+        // Arrays para armazenar dados do gráfico
+        let dadosGrafico = [];
+        const maxPontosGrafico = 200;
+
+        function calcularPeriodo() {
+            return 2 * Math.PI * Math.sqrt(comprimento / gravidade);
+        }
+
+        function calcularFrequencia() {
+            return 1 / calcularPeriodo();
+        }
+
+        function calcularOmega() {
+            return Math.sqrt(gravidade / comprimento);
+        }
 
         function atualizaValores() {
             comprimento = parseFloat(document.getElementById("comprimento").value);
             gravidade = parseFloat(document.getElementById("gravidade").value);
             anguloInicial = parseFloat(document.getElementById("angulo").value) * Math.PI / 180;
 
-            document.getElementById("valComprimento").textContent = comprimento.toFixed(1);
-            document.getElementById("valGravidade").textContent = gravidade.toFixed(1);
-            document.getElementById("valAngulo").textContent = (anguloInicial * 180 / Math.PI).toFixed(0);
+            document.getElementById("valComprimento").textContent = comprimento.toFixed(1) + " m";
+            document.getElementById("valGravidade").textContent = gravidade.toFixed(1) + " m/s²";
+            document.getElementById("valAngulo").textContent = (anguloInicial * 180 / Math.PI).toFixed(0) + "°";
+
+            // Atualizar dados calculados
+            const periodo = calcularPeriodo();
+            const frequencia = calcularFrequencia();
+            const omega = calcularOmega();
+
+            document.getElementById("periodo").textContent = periodo.toFixed(2) + " s";
+            document.getElementById("frequencia").textContent = frequencia.toFixed(2) + " Hz";
+            document.getElementById("omega").textContent = omega.toFixed(2) + " rad/s";
 
             if (!rodando) {
                 t = 0;
-                desenhar(anguloInicial);
+                dadosGrafico = [];
+                desenharPendulo(anguloInicial);
+                desenharGrafico();
             }
         }
 
-        function desenhar(theta) {
-            // Limpar canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function desenharPendulo(theta) {
+            ctxPendulo.clearRect(0, 0, canvasPendulo.width, canvasPendulo.height);
 
-            // Adicionar gradiente de fundo
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            // Fundo
+            const gradient = ctxPendulo.createLinearGradient(0, 0, 0, canvasPendulo.height);
             gradient.addColorStop(0, '#f7fafc');
             gradient.addColorStop(1, '#edf2f7');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctxPendulo.fillStyle = gradient;
+            ctxPendulo.fillRect(0, 0, canvasPendulo.width, canvasPendulo.height);
 
             // Calcular posições
-            const escala = Math.min(canvas.width, canvas.height) * 0.12;
+            const escala = Math.min(canvasPendulo.width, canvasPendulo.height) * 0.25;
             const px = origem.x + Math.sin(theta) * comprimento * escala;
             const py = origem.y + Math.cos(theta) * comprimento * escala;
 
+            // Desenhar trajetória (arco)
+            ctxPendulo.beginPath();
+            ctxPendulo.arc(origem.x, origem.y, comprimento * escala, 0, Math.PI, false);
+            ctxPendulo.strokeStyle = "rgba(102, 126, 234, 0.2)";
+            ctxPendulo.lineWidth = 2;
+            ctxPendulo.setLineDash([5, 5]);
+            ctxPendulo.stroke();
+            ctxPendulo.setLineDash([]);
+
+            // Desenhar linha vertical de referência
+            ctxPendulo.beginPath();
+            ctxPendulo.moveTo(origem.x, origem.y);
+            ctxPendulo.lineTo(origem.x, origem.y + comprimento * escala);
+            ctxPendulo.strokeStyle = "rgba(0, 0, 0, 0.2)";
+            ctxPendulo.lineWidth = 1;
+            ctxPendulo.setLineDash([3, 3]);
+            ctxPendulo.stroke();
+            ctxPendulo.setLineDash([]);
+
+            // Desenhar ângulo
+            if (Math.abs(theta) > 0.05) {
+                ctxPendulo.beginPath();
+                ctxPendulo.arc(origem.x, origem.y, 50, Math.PI / 2, Math.PI / 2 + theta, theta < 0);
+                ctxPendulo.strokeStyle = "rgba(102, 126, 234, 0.6)";
+                ctxPendulo.lineWidth = 2;
+                ctxPendulo.stroke();
+
+                // Texto do ângulo
+                const anguloGraus = (theta * 180 / Math.PI).toFixed(1);
+                ctxPendulo.fillStyle = "#667eea";
+                ctxPendulo.font = "bold 14px Arial";
+                ctxPendulo.fillText(anguloGraus + "°", origem.x + 60, origem.y + 20);
+            }
+
             // Desenhar ponto de fixação
-            ctx.beginPath();
-            ctx.arc(origem.x, origem.y, 8, 0, 2 * Math.PI);
-            ctx.fillStyle = "#2d3748";
-            ctx.fill();
+            ctxPendulo.beginPath();
+            ctxPendulo.arc(origem.x, origem.y, 10, 0, 2 * Math.PI);
+            ctxPendulo.fillStyle = "#2d3748";
+            ctxPendulo.fill();
+            ctxPendulo.strokeStyle = "#1a202c";
+            ctxPendulo.lineWidth = 2;
+            ctxPendulo.stroke();
 
             // Desenhar fio
-            ctx.beginPath();
-            ctx.moveTo(origem.x, origem.y);
-            ctx.lineTo(px, py);
-            ctx.strokeStyle = "#4a5568";
-            ctx.lineWidth = 3;
-            ctx.stroke();
+            ctxPendulo.beginPath();
+            ctxPendulo.moveTo(origem.x, origem.y);
+            ctxPendulo.lineTo(px, py);
+            ctxPendulo.strokeStyle = "#4a5568";
+            ctxPendulo.lineWidth = 3;
+            ctxPendulo.stroke();
 
             // Desenhar massa (bolinha)
-            const raio = 25;
+            const raio = 18;
 
-            // Sombra da bolinha
-            ctx.beginPath();
-            ctx.arc(px + 3, py + 3, raio, 0, 2 * Math.PI);
-            ctx.fillStyle = "rgba(0,0,0,0.2)";
-            ctx.fill();
+            // Sombra
+            ctxPendulo.beginPath();
+            ctxPendulo.arc(px + 3, py + 3, raio, 0, 2 * Math.PI);
+            ctxPendulo.fillStyle = "rgba(0,0,0,0.2)";
+            ctxPendulo.fill();
 
             // Bolinha principal
-            const bolaGradient = ctx.createRadialGradient(px - 8, py - 8, 0, px, py, raio);
+            const bolaGradient = ctxPendulo.createRadialGradient(px - 8, py - 8, 0, px, py, raio);
             bolaGradient.addColorStop(0, '#667eea');
             bolaGradient.addColorStop(1, '#764ba2');
 
-            ctx.beginPath();
-            ctx.arc(px, py, raio, 0, 2 * Math.PI);
-            ctx.fillStyle = bolaGradient;
-            ctx.fill();
+            ctxPendulo.beginPath();
+            ctxPendulo.arc(px, py, raio, 0, 2 * Math.PI);
+            ctxPendulo.fillStyle = bolaGradient;
+            ctxPendulo.fill();
 
-            // Borda da bolinha
-            ctx.strokeStyle = "#4a5568";
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            // Borda
+            ctxPendulo.strokeStyle = "#4a5568";
+            ctxPendulo.lineWidth = 2;
+            ctxPendulo.stroke();
 
-            // Brilho na bolinha
-            ctx.beginPath();
-            ctx.arc(px - 8, py - 8, 6, 0, 2 * Math.PI);
-            ctx.fillStyle = "rgba(255,255,255,0.6)";
-            ctx.fill();
+            // Brilho
+            ctxPendulo.beginPath();
+            ctxPendulo.arc(px - 8, py - 8, 5, 0, 2 * Math.PI);
+            ctxPendulo.fillStyle = "rgba(255,255,255,0.6)";
+            ctxPendulo.fill();
 
-            // Desenhar arco do ângulo
-            if (!rodando && Math.abs(theta) > 0.1) {
-                ctx.beginPath();
-                ctx.arc(origem.x, origem.y, 60, 0, theta, theta > 0);
-                ctx.strokeStyle = "rgba(102, 126, 234, 0.5)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
+            // Mostrar comprimento
+            ctxPendulo.fillStyle = "#4a5568";
+            ctxPendulo.font = "bold 12px Arial";
+            const textoComprimento = "L = " + comprimento.toFixed(1) + " m";
+            ctxPendulo.fillText(textoComprimento, origem.x + 10, origem.y + comprimento * escala / 2);
+        }
+
+        function desenharGrafico() {
+            ctxGrafico.clearRect(0, 0, canvasGrafico.width, canvasGrafico.height);
+
+            // Fundo
+            ctxGrafico.fillStyle = "#ffffff";
+            ctxGrafico.fillRect(0, 0, canvasGrafico.width, canvasGrafico.height);
+
+            // Margens
+            const margem = { top: 20, right: 30, bottom: 40, left: 60 };
+            const larguraGrafico = canvasGrafico.width - margem.left - margem.right;
+            const alturaGrafico = canvasGrafico.height - margem.top - margem.bottom;
+
+            // Desenhar eixos
+            ctxGrafico.strokeStyle = "#2d3748";
+            ctxGrafico.lineWidth = 2;
+
+            // Eixo X
+            ctxGrafico.beginPath();
+            ctxGrafico.moveTo(margem.left, canvasGrafico.height - margem.bottom);
+            ctxGrafico.lineTo(canvasGrafico.width - margem.right, canvasGrafico.height - margem.bottom);
+            ctxGrafico.stroke();
+
+            // Eixo Y
+            ctxGrafico.beginPath();
+            ctxGrafico.moveTo(margem.left, margem.top);
+            ctxGrafico.lineTo(margem.left, canvasGrafico.height - margem.bottom);
+            ctxGrafico.stroke();
+
+            // Labels dos eixos
+            ctxGrafico.fillStyle = "#4a5568";
+            ctxGrafico.font = "bold 14px Arial";
+            ctxGrafico.fillText("Tempo (s)", canvasGrafico.width / 2 - 30, canvasGrafico.height - 10);
+
+            ctxGrafico.save();
+            ctxGrafico.translate(15, canvasGrafico.height / 2);
+            ctxGrafico.rotate(-Math.PI / 2);
+            ctxGrafico.fillText("Ângulo (°)", 0, 0);
+            ctxGrafico.restore();
+
+            // Linha central (ângulo = 0)
+            ctxGrafico.strokeStyle = "#cbd5e0";
+            ctxGrafico.lineWidth = 1;
+            ctxGrafico.setLineDash([5, 5]);
+            ctxGrafico.beginPath();
+            ctxGrafico.moveTo(margem.left, margem.top + alturaGrafico / 2);
+            ctxGrafico.lineTo(canvasGrafico.width - margem.right, margem.top + alturaGrafico / 2);
+            ctxGrafico.stroke();
+            ctxGrafico.setLineDash([]);
+
+            // Desenhar dados
+            if (dadosGrafico.length > 1) {
+                const maxTempo = Math.max(...dadosGrafico.map(d => d.t));
+                const minTempo = Math.min(...dadosGrafico.map(d => d.t));
+                const tempoSpan = maxTempo - minTempo || 1; // evita divisão por zero
+                const maxAngulo = Math.max(...dadosGrafico.map(d => Math.abs(d.angulo))) || 1;
+
+                // fundo do traço
+                ctxGrafico.strokeStyle = "#667eea";
+                ctxGrafico.lineWidth = 2;
+                ctxGrafico.beginPath();
+
+                dadosGrafico.forEach((ponto, i) => {
+                    const x = margem.left + ((ponto.t - minTempo) / tempoSpan) * larguraGrafico;
+                    const y = margem.top + alturaGrafico / 2 - (ponto.angulo / maxAngulo) * (alturaGrafico / 2 - 10);
+
+                    if (i === 0) ctxGrafico.moveTo(x, y);
+                    else ctxGrafico.lineTo(x, y);
+                });
+
+                ctxGrafico.stroke();
+
+                // Marcadores de escala no eixo Y
+                ctxGrafico.fillStyle = "#718096";
+                ctxGrafico.font = "11px Arial";
+                ctxGrafico.textAlign = "right";
+
+                const anguloMax = (maxAngulo * 180 / Math.PI).toFixed(0);
+                ctxGrafico.fillText(anguloMax + "°", margem.left - 5, margem.top + 5);
+                ctxGrafico.fillText("0°", margem.left - 5, margem.top + alturaGrafico / 2 + 5);
+                ctxGrafico.fillText("-" + anguloMax + "°", margem.left - 5, canvasGrafico.height - margem.bottom);
+
+                // Marcadores de escala no eixo X
+                ctxGrafico.textAlign = "center";
+                ctxGrafico.fillText("0", margem.left, canvasGrafico.height - margem.bottom + 20);
+                ctxGrafico.fillText(maxTempo.toFixed(1), canvasGrafico.width - margem.right, canvasGrafico.height - margem.bottom + 20);
+            } else {
+                // Mensagem quando não há dados
+                ctxGrafico.fillStyle = "#a0aec0";
+                ctxGrafico.font = "16px Arial";
+                ctxGrafico.textAlign = "center";
+                ctxGrafico.fillText("Clique em 'Iniciar' para ver o gráfico", canvasGrafico.width / 2, canvasGrafico.height / 2);
             }
         }
 
@@ -374,6 +680,7 @@
             }
 
             t = 0;
+            dadosGrafico = [];
             rodando = true;
             pausado = false;
             document.getElementById("btnIniciar").textContent = "▶️ Iniciar";
@@ -393,39 +700,39 @@
             rodando = false;
             pausado = false;
             t = 0;
+            dadosGrafico = [];
             cancelAnimationFrame(animationId);
             document.getElementById("btnIniciar").textContent = "▶️ Iniciar";
-            desenhar(anguloInicial);
+            document.getElementById("tempo").textContent = "0.00 s";
+            desenharPendulo(anguloInicial);
+            desenharGrafico();
         }
 
         function animar() {
             if (!rodando) return;
 
-            const omega = Math.sqrt(gravidade / comprimento);
+            const omega = calcularOmega();
             const theta = anguloInicial * Math.cos(omega * t);
-            desenhar(theta);
+
+            // Adicionar dados ao gráfico
+            dadosGrafico.push({ t: t, angulo: theta });
+            if (dadosGrafico.length > maxPontosGrafico) {
+                dadosGrafico.shift();
+            }
+
+            desenharPendulo(theta);
+            desenharGrafico();
+
+            // Atualizar tempo
+            document.getElementById("tempo").textContent = t.toFixed(2) + " s";
+
             t += 0.016; // ~60fps
 
             animationId = requestAnimationFrame(animar);
         }
 
-        // Redimensionar canvas responsivamente
-        function ajustarCanvas() {
-            const container = canvas.parentElement;
-            const maxWidth = Math.min(container.clientWidth - 40, 600);
-            const aspectRatio = 400 / 600;
-
-            canvas.style.width = maxWidth + 'px';
-            canvas.style.height = (maxWidth * aspectRatio) + 'px';
-        }
-
         // Inicializar
-        document.addEventListener('DOMContentLoaded', function () {
-            atualizaValores();
-            ajustarCanvas();
-        });
-
-        window.addEventListener('resize', ajustarCanvas);
+        atualizaValores();
     </script>
 </body>
 

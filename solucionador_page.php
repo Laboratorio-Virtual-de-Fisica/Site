@@ -69,6 +69,22 @@ const minhasSimulacoes = [
         descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo.",
         categoria: "Mecânica"
     },
+    {
+        nome: "Encontro de Particulas",
+        pasta: "encontro-particulas",
+        arquivo: "index.html",
+        imagem: "thumb.png",
+        descricao: "Simulação interativa de colisão entre duas partículas com ajuste de massas, velocidades e tipo de encontro (elástico ou inelástico).",
+        categoria: "Mecânica"
+    },
+    {
+      nome: "Pêndulo Simples",
+      pasta: "pendulo-simples",
+      arquivo: "index.html",
+      imagem: "thumb.png",
+      descricao: "Simulação interativa do movimento oscilatório de um pêndulo simples com controle de comprimento, massa, gravidade e ângulo inicial.",
+      categoria: "Oscilações"
+   },
 ];
 
 let simulacoesFiltradas = [...minhasSimulacoes];
