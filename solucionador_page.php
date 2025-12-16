@@ -51,7 +51,7 @@ get_header();
             </ul>
          </div>
       </div>
-      
+
       <div class="row g-3" id="minhas-simulacoes">
          <!-- As simulações serão carregadas aqui via JavaScript -->
       </div>
@@ -60,99 +60,106 @@ get_header();
 </div>
 
 <script>
-const minhasSimulacoes = [
-    {
-        nome: "Cinemática Unidimensional",
-        pasta: "cinematica_unidimensional",
-        arquivo: "index.html",
-        imagem: "thumb.png",
-        descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo.",
-        categoria: "Mecânica"
-    },
-    {
-        nome: "Encontro de Particulas",
-        pasta: "encontro-particulas",
-        arquivo: "index.html",
-        imagem: "thumb.png",
-        descricao: "Simulação interativa de colisão entre duas partículas com ajuste de massas, velocidades e tipo de encontro (elástico ou inelástico).",
-        categoria: "Mecânica"
-    },
-    {
-      nome: "Pêndulo Simples",
-      pasta: "pendulo-simples",
-      arquivo: "index.html",
-      imagem: "thumb.png",
-      descricao: "Simulação interativa do movimento oscilatório de um pêndulo simples com controle de comprimento, massa, gravidade e ângulo inicial.",
-      categoria: "Oscilações"
-   },
-];
+   const minhasSimulacoes = [{
+         nome: "Cinemática Unidimensional",
+         pasta: "cinematica_unidimensional",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo.",
+         categoria: "Mecânica"
+      },
+      {
+         nome: "Encontro de Particulas",
+         pasta: "encontro-particulas",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de colisão entre duas partículas com ajuste de massas, velocidades e tipo de encontro (elástico ou inelástico).",
+         categoria: "Mecânica"
+      },
+      {
+         nome: "Pêndulo Simples",
+         pasta: "pendulo-simples",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa do movimento oscilatório de um pêndulo simples com controle de comprimento, massa, gravidade e ângulo inicial.",
+         categoria: "Oscilações"
+      },
+      {
+         nome: "Conversor de Unidades",
+         pasta: "conversor-unidades",
+         arquivo: "index.html",
+         imagem: "thumb.jpg",
+         descricao: "Conversor de unidades de outros sistemas para o Sistema Internacional.",
+         categoria: "Conversões"
+      },
+   ];
 
-let simulacoesFiltradas = [...minhasSimulacoes];
-let categoriaAtiva = 'todas';
+   let simulacoesFiltradas = [...minhasSimulacoes];
+   let categoriaAtiva = 'todas';
 
-// Função para obter categorias únicas
-function obterCategorias() {
-    const categorias = [...new Set(minhasSimulacoes.map(sim => sim.categoria))];
-    return ['Todas', ...categorias.sort()];
-}
+   // Função para obter categorias únicas
+   function obterCategorias() {
+      const categorias = [...new Set(minhasSimulacoes.map(sim => sim.categoria))];
+      return ['Todas', ...categorias.sort()];
+   }
 
-function criarMenuCategorias() {
-    const container = document.getElementById('menu-categorias');
-    const categorias = obterCategorias();
-    
-    categorias.forEach(categoria => {
-        const botao = document.createElement('button');
-        botao.className = categoria === 'Todas' ? 'btn btn-primary btn-sm' : 'btn btn-outline-primary btn-sm';
-        botao.textContent = categoria;
-        botao.onclick = () => filtrarPorCategoria(categoria);
-        botao.id = `btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`;
-        container.appendChild(botao);
-    });
-}
+   function criarMenuCategorias() {
+      const container = document.getElementById('menu-categorias');
+      const categorias = obterCategorias();
 
-function filtrarPorCategoria(categoria) {
-    document.querySelectorAll('#menu-categorias button').forEach(btn => {
-        btn.className = 'btn btn-outline-primary btn-sm';
-    });
-    document.getElementById(`btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`).className = 'btn btn-primary btn-sm';
-    
-    if (categoria === 'Todas') {
-        simulacoesFiltradas = [...minhasSimulacoes];
-        categoriaAtiva = 'todas';
-    } else {
-        simulacoesFiltradas = minhasSimulacoes.filter(sim => sim.categoria === categoria);
-        categoriaAtiva = categoria;
-    }
-    
-    document.getElementById('titulo-secao').textContent = 
-        categoria === 'Todas' ? 'Todas as Simulações' : `Simulações - ${categoria}`;
-    document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
-    
-    carregarSimulacoes();
-}
+      categorias.forEach(categoria => {
+         const botao = document.createElement('button');
+         botao.className = categoria === 'Todas' ? 'btn btn-primary btn-sm' : 'btn btn-outline-primary btn-sm';
+         botao.textContent = categoria;
+         botao.onclick = () => filtrarPorCategoria(categoria);
+         botao.id = `btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`;
+         container.appendChild(botao);
+      });
+   }
 
-// Função para ordenar simulações
-function ordenarSimulacoes(tipo) {
-    if (tipo === 'nome') {
-        simulacoesFiltradas.sort((a, b) => a.nome.localeCompare(b.nome));
-    } else if (tipo === 'categoria') {
-        simulacoesFiltradas.sort((a, b) => {
+   function filtrarPorCategoria(categoria) {
+      document.querySelectorAll('#menu-categorias button').forEach(btn => {
+         btn.className = 'btn btn-outline-primary btn-sm';
+      });
+      document.getElementById(`btn-${categoria.toLowerCase().replace(/\s+/g, '-')}`).className = 'btn btn-primary btn-sm';
+
+      if (categoria === 'Todas') {
+         simulacoesFiltradas = [...minhasSimulacoes];
+         categoriaAtiva = 'todas';
+      } else {
+         simulacoesFiltradas = minhasSimulacoes.filter(sim => sim.categoria === categoria);
+         categoriaAtiva = categoria;
+      }
+
+      document.getElementById('titulo-secao').textContent =
+         categoria === 'Todas' ? 'Todas as Simulações' : `Simulações - ${categoria}`;
+      document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
+
+      carregarSimulacoes();
+   }
+
+   // Função para ordenar simulações
+   function ordenarSimulacoes(tipo) {
+      if (tipo === 'nome') {
+         simulacoesFiltradas.sort((a, b) => a.nome.localeCompare(b.nome));
+      } else if (tipo === 'categoria') {
+         simulacoesFiltradas.sort((a, b) => {
             if (a.categoria === b.categoria) {
-                return a.nome.localeCompare(b.nome);
+               return a.nome.localeCompare(b.nome);
             }
             return a.categoria.localeCompare(b.categoria);
-        });
-    }
-    carregarSimulacoes();
-}
+         });
+      }
+      carregarSimulacoes();
+   }
 
-// Função para carregar as simulações (atualizada)
-function carregarSimulacoes() {
-    const container = document.getElementById('minhas-simulacoes');
-    container.innerHTML = '';
-    
-    if (simulacoesFiltradas.length === 0) {
-        container.innerHTML = `
+   // Função para carregar as simulações (atualizada)
+   function carregarSimulacoes() {
+      const container = document.getElementById('minhas-simulacoes');
+      container.innerHTML = '';
+
+      if (simulacoesFiltradas.length === 0) {
+         container.innerHTML = `
             <div class="col-12">
                 <div class="text-center py-5">
                     <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
@@ -160,17 +167,17 @@ function carregarSimulacoes() {
                 </div>
             </div>
         `;
-        return;
-    }
-    
-    simulacoesFiltradas.forEach(simulacao => {
-        const col = document.createElement('div');
-        col.className = 'col-12 col-sm-6 col-lg-4';
-        
-        const imagemPath = `<?php echo get_template_directory_uri(); ?>/simulacoes/${simulacao.pasta}/${simulacao.imagem}`;
-        const simulacaoPath = `<?php echo get_template_directory_uri(); ?>/simulacoes/${simulacao.pasta}/${simulacao.arquivo}`;
-        
-        col.innerHTML = `
+         return;
+      }
+
+      simulacoesFiltradas.forEach(simulacao => {
+         const col = document.createElement('div');
+         col.className = 'col-12 col-sm-6 col-lg-4';
+
+         const imagemPath = `<?php echo get_template_directory_uri(); ?>/simulacoes/${simulacao.pasta}/${simulacao.imagem}`;
+         const simulacaoPath = `<?php echo get_template_directory_uri(); ?>/simulacoes/${simulacao.pasta}/${simulacao.arquivo}`;
+
+         col.innerHTML = `
             <div class="card h-100 shadow-sm cursor-pointer" onclick="abrirSimulacaoDirecta('${simulacaoPath}', '${simulacao.nome}')">
                 <img src="${imagemPath}" class="card-img-top" alt="${simulacao.nome}" 
                      style="height: 200px; object-fit: cover;" 
@@ -188,20 +195,20 @@ function carregarSimulacoes() {
                 </div>
             </div>
         `;
-        
-        container.appendChild(col);
-    });
-}
 
-// Função para abrir simulação diretamente em nova janela
-function abrirSimulacaoDirecta(url, nome) {
-    // Configurações da janela
-    const largura = Math.min(1200, screen.width * 0.9);
-    const altura = Math.min(800, screen.height * 0.9);
-    const esquerda = (screen.width - largura) / 2;
-    const topo = (screen.height - altura) / 2;
-    
-    const configuracoes = `
+         container.appendChild(col);
+      });
+   }
+
+   // Função para abrir simulação diretamente em nova janela
+   function abrirSimulacaoDirecta(url, nome) {
+      // Configurações da janela
+      const largura = Math.min(1200, screen.width * 0.9);
+      const altura = Math.min(800, screen.height * 0.9);
+      const esquerda = (screen.width - largura) / 2;
+      const topo = (screen.height - altura) / 2;
+
+      const configuracoes = `
         width=${largura},
         height=${altura},
         left=${esquerda},
@@ -213,26 +220,26 @@ function abrirSimulacaoDirecta(url, nome) {
         location=no,
         status=no
     `;
-    
-    // Abrir em nova janela
-    const novaJanela = window.open(url, `simulacao_${Date.now()}`, configuracoes);
-    
-    // Focar na nova janela (se possível)
-    if (novaJanela) {
-        novaJanela.focus();
-    } else {
-        // Fallback caso o popup seja bloqueado
-        alert('Por favor, permita popups para este site para abrir a simulação em uma nova janela.');
-    }
-}
 
-// Inicializar quando a página carregar
-document.addEventListener('DOMContentLoaded', function() {
-    criarMenuCategorias();
-    simulacoesFiltradas = [...minhasSimulacoes];
-    document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
-    carregarSimulacoes();
-});
+      // Abrir em nova janela
+      const novaJanela = window.open(url, `simulacao_${Date.now()}`, configuracoes);
+
+      // Focar na nova janela (se possível)
+      if (novaJanela) {
+         novaJanela.focus();
+      } else {
+         // Fallback caso o popup seja bloqueado
+         alert('Por favor, permita popups para este site para abrir a simulação em uma nova janela.');
+      }
+   }
+
+   // Inicializar quando a página carregar
+   document.addEventListener('DOMContentLoaded', function() {
+      criarMenuCategorias();
+      simulacoesFiltradas = [...minhasSimulacoes];
+      document.getElementById('contador-simulacoes').textContent = simulacoesFiltradas.length;
+      carregarSimulacoes();
+   });
 </script>
 
 <style>
@@ -243,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
    .card:hover {
       transform: translateY(-2px);
       transition: transform 0.2s ease-in-out;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
    }
 
    .card {
@@ -285,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
          justify-content: center;
          width: 100%;
       }
-      
+
       .d-flex.flex-wrap.align-items-center.justify-content-between {
          flex-direction: column;
          align-items: stretch !important;

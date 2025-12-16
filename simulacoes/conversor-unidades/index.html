@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Conversor de Unidades → Sistema Internacional (SI)</title>
+    <style>
+        :root {
+            --bg-a: #f6f8ff;
+            --accent-1: #667eea;
+            --accent-2: #764ba2;
+            --card: rgba(255, 255, 255, 0.98);
+            --muted: #6b7280;
+            --glass: rgba(255, 255, 255, 0.7);
+            --radius: 15px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Left column - converters */
+        .panel {
+            background: var(--card);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h3 {
+            color: #4a5568;
+            margin: 0 0 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f4ff;
+        }
+
+        .converters {
+            display: grid;
+            gap: 15px;
+        }
+
+        .converter {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .converter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            border-color: var(--accent-1);
+        }
+
+        .converter .left {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .small {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 1rem;
+            color: #2d3748;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 1rem;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .result {
+            flex: 0 0 220px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .result-content {
+            flex: 1;
+        }
+
+        .si-value {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--accent-1);
+            margin: 5px 0;
+        }
+
+        .si-unit {
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Right column - derived units + help */
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .derived {
+            padding: 25px;
+        }
+
+        .derived-item {
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .formula {
+            font-family: "Times New Roman", serif;
+            color: var(--accent-1);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .examples {
+            margin-top: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            align-items: center;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .footer {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        /* responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .side {
+                order: 2;
+            }
+
+            .converter {
+                flex-direction: column;
+            }
+
+            .result {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .converter .left {
+                min-width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .derived-ctrl {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .derived-ctrl input[type="number"] {
+            width: 140px;
+        }
+
+        .copy {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: #374151;
+            line-height: 1.5;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-1);
+            margin-top: 15px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .data-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Melhorar a visualização do header */
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Adicionar um pouco de transparência ao fundo para ver o gradiente */
+        .panel,
+        .header,
+        .converter,
+        .derived-item,
+        .result {
+            background: rgba(255, 255, 255, 0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>Conversor de Unidades → Sistema Internacional (SI)</h1>
+                <p>Converta valores de sistemas usuais para as unidades base do SI. Inclui unidades derivadas e relação
+                    com unidades fundamentais.</p>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left column -->
+            <div class="panel">
+                <h3>Unidades Base do SI</h3>
+                <div class="converters">
+
+                    <!-- Comprimento -->
+                    <div class="converter" id="conv-length">
+                        <div class="left">
+                            <label>Comprimento</label>
+                            <div class="small">Entrada (qualquer unidade) → Resultado em <strong>metro (m)</strong>
+                            </div>
+                            <input type="number" id="len-value" step="any" value="1" aria-label="valor de comprimento">
+                            <div class="control-group">
+                                <select id="len-unit" aria-label="unidade de comprimento">
+                                    <option value="m">metro (m)</option>
+                                    <option value="km">quilômetro (km)</option>
+                                    <option value="cm">centímetro (cm)</option>
+                                    <option value="mm">milímetro (mm)</option>
+                                    <option value="um">micrômetro (µm)</option>
+                                    <option value="nm">nanômetro (nm)</option>
+                                    <option value="in">polegada (in)</option>
+                                    <option value="ft">pé (ft)</option>
+                                    <option value="yd">jarda (yd)</option>
+                                    <option value="mi">milha (mi)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="len-si">1.000 m</div>
+                                <div class="si-unit">metro (m)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="len-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Massa -->
+                    <div class="converter" id="conv-mass">
+                        <div class="left">
+                            <label>Massa</label>
+                            <div class="small">Entrada → Resultado em <strong>quilograma (kg)</strong></div>
+                            <input type="number" id="mass-value" step="any" value="1">
+                            <div class="control-group">
+                                <select id="mass-unit">
+                                    <option value="kg">quilograma (kg)</option>
+                                    <option value="g">grama (g)</option>
+                                    <option value="mg">miligrama (mg)</option>
+                                    <option value="t">tonelada (t)</option>
+                                    <option value="lb">libra (lb)</option>
+                                    <option value="oz">onça (oz)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="mass-si">1.000 kg</div>
+                                <div class="si-unit">quilograma (kg)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="mass-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tempo -->
+                    <div class="converter" id="conv-time">
+                        <div class="left">
+                            <label>Tempo</label>
+                            <div class="small">Entrada → Resultado em <strong>segundo (s)</strong></div>
+                            <input type="number" id="time-value" step="any" value="1">
+                            <div class="control-group">
+                                <select id="time-unit">
+                                    <option value="s">segundo (s)</option>
+                                    <option value="min">minuto (min)</option>
+                                    <option value="h">hora (h)</option>
+                                    <option value="day">dia (d)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="time-si">1.000 s</div>
+                                <div class="si-unit">segundo (s)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="time-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Temperatura -->
+                    <div class="converter" id="conv-temp">
+                        <div class="left">
+                            <label>Temperatura</label>
+                            <div class="small">Entrada → Resultado em <strong>kelvin (K)</strong></div>
+                            <input type="number" id="temp-value" step="any" value="25">
+                            <div class="control-group">
+                                <select id="temp-unit">
+                                    <option value="C">Celsius (°C)</option>
+                                    <option value="K">Kelvin (K)</option>
+                                    <option value="F">Fahrenheit (°F)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="temp-si">298.15 K</div>
+                                <div class="si-unit">kelvin (K)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="temp-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quantidade de substância -->
+                    <div class="converter" id="conv-amount">
+                        <div class="left">
+                            <label>Quantidade de substância</label>
+                            <div class="small">Entrada → Resultado em <strong>mol (mol)</strong></div>
+                            <input type="number" id="amt-value" step="any" value="1">
+                            <div class="control-group">
+                                <select id="amt-unit">
+                                    <option value="mol">mol</option>
+                                    <option value="mmol">mmol</option>
+                                    <option value="kmol">kmol</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="amt-si">1.000 mol</div>
+                                <div class="si-unit">mol</div>
+                            </div>
+                            <button class="copy-btn" data-copy="amt-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Intensidade luminosa -->
+                    <div class="converter" id="conv-lum">
+                        <div class="left">
+                            <label>Intensidade luminosa</label>
+                            <div class="small">Entrada → Resultado em <strong>candela (cd)</strong></div>
+                            <input type="number" id="lum-value" step="any" value="1">
+                            <div class="control-group">
+                                <select id="lum-unit">
+                                    <option value="cd">candela (cd)</option>
+                                    <option value="mcd">mili-candela (mcd)</option>
+                                    <option value="kcd">kilo-candela (kcd)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="lum-si">1.000 cd</div>
+                                <div class="si-unit">candela (cd)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="lum-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Corrente elétrica -->
+                    <div class="converter" id="conv-current">
+                        <div class="left">
+                            <label>Corrente elétrica</label>
+                            <div class="small">Entrada → Resultado em <strong>ampere (A)</strong></div>
+                            <input type="number" id="cur-value" step="any" value="1">
+                            <div class="control-group">
+                                <select id="cur-unit">
+                                    <option value="A">ampere (A)</option>
+                                    <option value="mA">miliampere (mA)</option>
+                                    <option value="uA">microampere (µA)</option>
+                                    <option value="kA">kiloampere (kA)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result">
+                            <div class="result-content">
+                                <div class="small">SI (base)</div>
+                                <div class="si-value" id="cur-si">1.000 A</div>
+                                <div class="si-unit">ampere (A)</div>
+                            </div>
+                            <button class="copy-btn" data-copy="cur-si">
+                                📋 Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                </div> <!-- converters -->
+
+                <div class="control-group"
+                    style="margin-top: 25px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn" id="btn-copy-all">
+                        📋 Copiar Todos os Valores SI
+                    </button>
+                    <div style="flex: 1"></div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="side">
+                <div class="panel derived">
+                    <h3>Unidades Derivadas — Relação com fundamentos</h3>
+                    <div class="hint">Escolha um tipo, insira um valor e veja a conversão para SI derivada e sua
+                        decomposição nas unidades fundamentais do SI (kg, m, s).</div>
+
+                    <!-- Derived: Força (N) -->
+                    <div class="derived-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                            <div>
+                                <div style="font-weight: 700; color: #4a5568">Força — Newton (N)</div>
+                                <div class="formula">1 N = 1 kg·m/s²</div>
+                                <div class="small">Unidades comuns de entrada: N, lbf (pound-force), dyne</div>
+                            </div>
+                        </div>
+
+                        <div class="derived-ctrl" style="margin-top: 15px">
+                            <input type="number" id="force-value" value="1" step="any" />
+                            <select id="force-unit">
+                                <option value="N">N (newton)</option>
+                                <option value="lbf">lbf (pound-force)</option>
+                                <option value="dyne">dyne</option>
+                            </select>
+                            <button class="btn" id="force-convert">Converter</button>
+                            <button class="copy" id="force-copy">📋 Copiar</button>
+                        </div>
+
+                        <div style="margin-top: 15px">
+                            <div class="small">Resultado:</div>
+                            <div style="margin-top: 10px">
+                                <div id="force-result" class="si-value">1.000 N</div>
+                                <div style="margin-top: 8px" id="force-decomp">Equivalente em unidades base: 1.000
+                                    kg·m/s²</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Derived: Pressão (Pa) -->
+                    <div class="derived-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                            <div>
+                                <div style="font-weight: 700; color: #4a5568">Pressão — Pascal (Pa)</div>
+                                <div class="formula">1 Pa = 1 N/m² = 1 kg·m⁻¹·s⁻²</div>
+                                <div class="small">Unidades comuns: Pa, bar, atm, psi</div>
+                            </div>
+                        </div>
+
+                        <div class="derived-ctrl" style="margin-top: 15px">
+                            <input type="number" id="pres-value" value="101325" step="any" />
+                            <select id="pres-unit">
+                                <option value="Pa">Pa</option>
+                                <option value="bar">bar</option>
+                                <option value="atm">atm</option>
+                                <option value="psi">psi</option>
+                            </select>
+                            <button class="btn" id="pres-convert">Converter</button>
+                            <button class="copy" id="pres-copy">📋 Copiar</button>
+                        </div>
+
+                        <div style="margin-top: 15px">
+                            <div class="small">Resultado:</div>
+                            <div style="margin-top: 10px">
+                                <div id="pres-result" class="si-value">101325 Pa</div>
+                                <div style="margin-top: 8px" id="pres-decomp">Equivalente em unidades base: 101325
+                                    kg·m⁻¹·s⁻²</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional notes / small cheatsheet -->
+                    <div style="margin-top: 15px" class="hint">
+                        <strong>Outras unidades derivadas úteis (exemplos):</strong>
+                        <ul style="margin: 10px 0 0 20px; color: var(--muted)">
+                            <li><code>J (joule)</code> = N·m = kg·m²·s⁻²</li>
+                            <li><code>W (watt)</code> = J/s = kg·m²·s⁻³</li>
+                            <li><code>Hz (hertz)</code> = s⁻¹</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel" style="padding: 20px">
+                    <h4 style="margin: 0 0 12px 0; color: #4a5568">Como usar</h4>
+                    <ol style="color: var(--muted); margin: 0 0 0 20px; line-height: 1.6">
+                        <li>Escolha a grandeza (cada bloco).</li>
+                        <li>Digite valor e unidade de origem.</li>
+                        <li>O resultado em unidade base do SI aparece à direita automaticamente.</li>
+                        <li>Clique no botão "Copiar" para copiar o valor específico.</li>
+                        <li>Nos exemplos de unidades derivadas (N, Pa) você pode ver a decomposição nas unidades
+                            fundamentais.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Conversões para unidades base do SI ---
+        const lengthFactors = {
+            "m": 1,
+            "km": 1e3,
+            "cm": 1e-2,
+            "mm": 1e-3,
+            "um": 1e-6,
+            "nm": 1e-9,
+            "in": 0.0254,
+            "ft": 0.3048,
+            "yd": 0.9144,
+            "mi": 1609.344
+        };
+
+        const massFactors = {
+            "kg": 1,
+            "g": 1e-3,
+            "mg": 1e-6,
+            "t": 1e3,
+            "lb": 0.45359237,
+            "oz": 0.028349523125
+        };
+
+        const timeFactors = {
+            "s": 1,
+            "min": 60,
+            "h": 3600,
+            "day": 86400
+        };
+
+        const amtFactors = {
+            "mol": 1,
+            "mmol": 1e-3,
+            "kmol": 1e3
+        };
+
+        const lumFactors = {
+            "cd": 1,
+            "mcd": 1e-3,
+            "kcd": 1e3
+        };
+
+        const curFactors = {
+            "A": 1,
+            "mA": 1e-3,
+            "uA": 1e-6,
+            "kA": 1e3
+        };
+
+        // Elements
+        const el = (id) => document.getElementById(id);
+
+        // Update functions
+        function updateLength() {
+            const v = parseFloat(el("len-value").value) || 0;
+            const unit = el("len-unit").value;
+            const si = v * lengthFactors[unit];
+            el("len-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " m";
+        }
+        function updateMass() {
+            const v = parseFloat(el("mass-value").value) || 0;
+            const unit = el("mass-unit").value;
+            const si = v * massFactors[unit];
+            el("mass-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " kg";
+        }
+        function updateTime() {
+            const v = parseFloat(el("time-value").value) || 0;
+            const unit = el("time-unit").value;
+            const si = v * timeFactors[unit];
+            el("time-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " s";
+        }
+        function updateTemp() {
+            const v = parseFloat(el("temp-value").value);
+            const unit = el("temp-unit").value;
+            let K = 0;
+            if (Number.isFinite(v) === false) { K = 0; }
+            else {
+                if (unit === "K") K = v;
+                else if (unit === "C") K = v + 273.15;
+                else if (unit === "F") K = (v - 32) * 5 / 9 + 273.15;
+            }
+            el("temp-si").textContent = K.toLocaleString(undefined, { maximumFractionDigits: 6 }) + " K";
+        }
+        function updateAmount() {
+            const v = parseFloat(el("amt-value").value) || 0;
+            const unit = el("amt-unit").value;
+            const si = v * amtFactors[unit];
+            el("amt-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " mol";
+        }
+        function updateLum() {
+            const v = parseFloat(el("lum-value").value) || 0;
+            const unit = el("lum-unit").value;
+            const si = v * lumFactors[unit];
+            el("lum-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " cd";
+        }
+        function updateCur() {
+            const v = parseFloat(el("cur-value").value) || 0;
+            const unit = el("cur-unit").value;
+            const si = v * curFactors[unit];
+            el("cur-si").textContent = si.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " A";
+        }
+
+        // Attach events (live)
+        el("len-value").addEventListener("input", updateLength);
+        el("len-unit").addEventListener("change", updateLength);
+        el("mass-value").addEventListener("input", updateMass);
+        el("mass-unit").addEventListener("change", updateMass);
+        el("time-value").addEventListener("input", updateTime);
+        el("time-unit").addEventListener("change", updateTime);
+        el("temp-value").addEventListener("input", updateTemp);
+        el("temp-unit").addEventListener("change", updateTemp);
+        el("amt-value").addEventListener("input", updateAmount);
+        el("amt-unit").addEventListener("change", updateAmount);
+        el("lum-value").addEventListener("input", updateLum);
+        el("lum-unit").addEventListener("change", updateLum);
+        el("cur-value").addEventListener("input", updateCur);
+        el("cur-unit").addEventListener("change", updateCur);
+
+        // Copy buttons for each converter
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-copy');
+                const text = el(targetId).textContent;
+                const type = this.closest('.converter').querySelector('label').textContent;
+
+                navigator.clipboard?.writeText(`${type}: ${text}`).then(() => {
+                    // Visual feedback
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '✓ Copiado!';
+                    this.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.background = '';
+                    }, 2000);
+                }).catch(() => {
+                    alert(`Copie manualmente:\n\n${text}`);
+                });
+            });
+        });
+
+        // Copy all SI values
+        el("btn-copy-all").addEventListener("click", () => {
+            const text = [
+                "Comprimento: " + el("len-si").textContent,
+                "Massa: " + el("mass-si").textContent,
+                "Tempo: " + el("time-si").textContent,
+                "Temperatura: " + el("temp-si").textContent,
+                "Quantidade de substância: " + el("amt-si").textContent,
+                "Int. luminosa: " + el("lum-si").textContent,
+                "Corrente elétrica: " + el("cur-si").textContent
+            ].join("\n");
+
+            navigator.clipboard?.writeText(text).then(() => {
+                // Visual feedback
+                const originalText = el("btn-copy-all").innerHTML;
+                el("btn-copy-all").innerHTML = '✓ Todos copiados!';
+                el("btn-copy-all").style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+
+                setTimeout(() => {
+                    el("btn-copy-all").innerHTML = originalText;
+                    el("btn-copy-all").style.background = '';
+                }, 2000);
+            }).catch(() => {
+                alert("Não foi possível copiar automaticamente — selecione e copie manualmente:\n\n" + text);
+            });
+        });
+
+        // --- Derived units: Force (N) ---
+        // conversion factors to newton
+        const forceToN = {
+            "N": 1,
+            "lbf": 4.4482216152605,
+            "dyne": 1e-5
+        };
+
+        function convertForce() {
+            const v = parseFloat(el("force-value").value) || 0;
+            const unit = el("force-unit").value;
+            const nin = v * (forceToN[unit] || 1);
+            // display
+            el("force-result").textContent = nin.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " N";
+            el("force-decomp").textContent = "Equivalente em unidades base: " + nin.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " kg·m/s²";
+        }
+        el("force-convert").addEventListener("click", convertForce);
+        el("force-unit").addEventListener("change", convertForce);
+        el("force-value").addEventListener("input", convertForce);
+        el("force-copy").addEventListener("click", () => {
+            const txt = el("force-result").textContent + "  (" + el("force-decomp").textContent + ")";
+            navigator.clipboard?.writeText(txt).then(() => {
+                // Visual feedback
+                const originalText = el("force-copy").innerHTML;
+                el("force-copy").innerHTML = '✓ Copiado!';
+                el("force-copy").style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+
+                setTimeout(() => {
+                    el("force-copy").innerHTML = originalText;
+                    el("force-copy").style.background = '';
+                }, 2000);
+            }).catch(() => alert(txt));
+        });
+
+        // --- Derived units: Pressure (Pa) ---
+        const presToPa = {
+            "Pa": 1,
+            "bar": 1e5,
+            "atm": 101325,
+            "psi": 6894.757293168
+        };
+        function convertPres() {
+            const v = parseFloat(el("pres-value").value) || 0;
+            const unit = el("pres-unit").value;
+            const pa = v * (presToPa[unit] || 1);
+            el("pres-result").textContent = pa.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " Pa";
+            // decompose Pa -> N/m^2 -> kg·m^-1·s^-2
+            el("pres-decomp").textContent = "Equivalente em unidades base: " + pa.toLocaleString(undefined, { maximumFractionDigits: 12 }) + " kg·m⁻¹·s⁻²";
+        }
+        el("pres-convert").addEventListener("click", convertPres);
+        el("pres-value").addEventListener("input", convertPres);
+        el("pres-unit").addEventListener("change", convertPres);
+        el("pres-copy").addEventListener("click", () => {
+            const txt = el("pres-result").textContent + "  (" + el("pres-decomp").textContent + ")";
+            navigator.clipboard?.writeText(txt).then(() => {
+                // Visual feedback
+                const originalText = el("pres-copy").innerHTML;
+                el("pres-copy").innerHTML = '✓ Copiado!';
+                el("pres-copy").style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+
+                setTimeout(() => {
+                    el("pres-copy").innerHTML = originalText;
+                    el("pres-copy").style.background = '';
+                }, 2000);
+            }).catch(() => alert(txt));
+        });
+
+        // Initialize default values
+        updateLength();
+        updateMass();
+        updateTime();
+        updateTemp();
+        updateAmount();
+        updateLum();
+        updateCur();
+        convertForce();
+        convertPres();
+
+        // Accessibility / small improvements: handle Enter to convert derived quickly
+        ["force-value", "pres-value"].forEach(id => {
+            el(id).addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    if (id === "force-value") convertForce();
+                    if (id === "pres-value") convertPres();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
