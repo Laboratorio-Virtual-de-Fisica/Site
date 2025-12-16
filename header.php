@@ -5,11 +5,10 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php bloginfo('name'); ?></title>
-    <?php wp_head(); ?>
-
     <!-- Bootstrap -->
     <?php wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3', 'all'); ?>
     <?php wp_enqueue_style('meu-tema-style', get_stylesheet_uri(), array('bootstrap'), '1.0', 'all'); ?>
+    <?php wp_head(); ?>
 </head>
 
 <body <?php body_class(); ?>>
