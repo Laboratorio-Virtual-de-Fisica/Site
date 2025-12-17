@@ -92,6 +92,14 @@ get_header();
          descricao: "Conversor de unidades de outros sistemas para o Sistema Internacional.",
          categoria: "Conversões"
       },
+      {
+         nome: "Cinemática com Ref.",
+         pasta: "cinematica_com_referencial",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo e referencial.",
+         categoria: "Mecânica"
+      },
    ];
 
    let simulacoesFiltradas = [...minhasSimulacoes];
