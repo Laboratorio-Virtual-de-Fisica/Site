@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Simulador Físico de Movimento 2D</title>
+    <style>
+        :root {
+            --bg-a: #f6f8ff;
+            --accent-1: #667eea;
+            --accent-2: #764ba2;
+            --card: rgba(255, 255, 255, 0.98);
+            --muted: #6b7280;
+            --radius: 15px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            text-align: center;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .panel-title {
+            color: #2d3748;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            color: var(--accent-1);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 12px;
+            line-height: 1.5;
+            padding: 10px;
+            background: rgba(248, 250, 252, 0.85);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-1);
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-size: 1rem;
+            color: #2d3748;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .slider-container {
+            background: rgba(248, 250, 252, 0.85);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px
+        }
+
+        .slider-value {
+            font-weight: 700;
+            color: var(--accent-1);
+        }
+
+        .equation-editor {
+            background: rgba(248, 250, 252, 0.85);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .equation-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px
+        }
+
+        .equation-label {
+            font-weight: 700;
+            color: var(--accent-1);
+            min-width: 30px
+        }
+
+        /* Visualization Panel */
+        .visualization-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: transparent;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            overflow: hidden;
+            position: relative;
+            min-height: 520px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block
+        }
+
+        /* Tooltip */
+        .canvas-tooltip {
+            position: absolute;
+            pointer-events: none;
+            padding: 6px 8px;
+            background: rgba(45, 55, 72, 0.95);
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            transform: translate(-50%, -120%);
+            white-space: nowrap;
+            z-index: 100;
+            display: none;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 10px
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096, #4a5568);
+            color: white
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white
+        }
+
+        /* Stats Panel - CORRIGIDO */
+        .stats-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(248, 250, 252, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-1);
+            margin-bottom: 8px;
+            min-height: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        /* Data Panel */
+        .data-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+        }
+
+        .data-table-container {
+            max-height: 260px;
+            overflow: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table th {
+            background: rgba(248, 250, 252, 0.95);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: rgba(248, 250, 252, 0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Bug marker */
+        .bug-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            color: #e53e3e;
+            font-size: 24px;
+            z-index: 50;
+            pointer-events: none;
+            display: none;
+            text-align: center;
+            line-height: 24px;
+            filter: drop-shadow(0 0 3px rgba(229, 62, 62, 0.7));
+            transition: transform 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .bug-marker.moving {
+            animation: wiggle 0.5s infinite alternate;
+        }
+
+        @keyframes wiggle {
+            0% {
+                transform: translate(-50%, -50%) rotate(-5deg) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(5deg) scale(1.1);
+            }
+        }
+
+        .empty-data {
+            text-align: center;
+            color: #a0aec0;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-bug"></i> Simulador Físico de Movimento 2D</h1>
+        </div>
+
+        <div class="main-content">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="panel-title"><i class="fas fa-sliders-h"></i> Controles do Movimento</div>
+
+                <div class="control-group">
+                    <label><i class="fas fa-directions"></i> Tipo de Equação de Movimento</label>
+                    <select id="motionType">
+                        <option value="linearUniform">Movimento Retilíneo Uniforme</option>
+                        <option value="uniformAcceleration">Movimento com Aceleração Uniforme</option>
+                        <option value="harmonicOscillation">Oscilador Harmônico</option>
+                        <option value="circularUniform">Movimento Circular Uniforme</option>
+                        <option value="dampedOscillation">Oscilação Amortecida (baixo amortecimento)</option>
+                        <option value="custom">Equações Personalizadas</option>
+                    </select>
+                    <div class="hint">Cada tipo define automaticamente equações físicas para x(t) e y(t). Você pode
+                        modificar os parâmetros abaixo.</div>
+                </div>
+
+                <div class="control-group">
+                    <label><i class="fas fa-cogs"></i> Parâmetros do Movimento</label>
+
+                    <div class="slider-container">
+                        <div class="slider-header"><span>Velocidade Inicial (m/s)</span><span class="slider-value"
+                                id="velocityValue">2.0</span></div>
+                        <input type="range" id="initialVelocity" min="0.1" max="10" value="2" step="0.1">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header"><span>Ângulo Inicial (°)</span><span class="slider-value"
+                                id="angleValue">45</span></div>
+                        <input type="range" id="initialAngle" min="0" max="360" value="45" step="1">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header"><span>Duração da Simulação (s)</span><span class="slider-value"
+                                id="durationValue">10</span></div>
+                        <input type="range" id="simulationDuration" min="1" max="30" value="10" step="1">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header"><span>Passos por Segundo</span><span class="slider-value"
+                                id="stepsValue">20</span></div>
+                        <input type="range" id="timeSteps" min="1" max="100" value="20" step="1">
+                    </div>
+
+                    <div class="slider-container" id="accelerationContainer">
+                        <div class="slider-header"><span>Aceleração (m/s²)</span><span class="slider-value"
+                                id="accelerationValue">0.5</span></div>
+                        <input type="range" id="acceleration" min="0" max="5" value="0.5" step="0.1">
+                    </div>
+
+                    <div class="slider-container" id="frequencyContainer">
+                        <div class="slider-header"><span>Frequência Angular (rad/s)</span><span class="slider-value"
+                                id="frequencyValue">1.0</span></div>
+                        <input type="range" id="frequency" min="0.1" max="5" value="1" step="0.1">
+                    </div>
+
+                    <div class="slider-container" id="dampingContainer" style="display:none;">
+                        <div class="slider-header"><span>Coeficiente de Amortecimento γ (baixo)</span><span
+                                class="slider-value" id="dampingValue">0.10</span></div>
+                        <input type="range" id="damping" min="0" max="1" value="0.1" step="0.01">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label><i class="fas fa-wave-square"></i> Flutuações Aleatórias (parâmetros)</label>
+                    <div class="slider-container">
+                        <div class="slider-header"><span>Amplitude das Flutuações (0 = off, 1 = máximo)</span><span
+                                class="slider-value" id="noiseValue">0.00</span></div>
+                        <input type="range" id="noiseAmplitude" min="0" max="1" value="0.00" step="0.1">
+                    </div>
+                    <div class="hint">As flutuações afetam aleatoriamente apenas UM parâmetro por passo (v0, theta, a,
+                        omega, ou gamma).</div>
+                </div>
+
+                <div class="control-group">
+                    <label><i class="fas fa-ruler"></i> Escala do Plano Cartesiano</label>
+                    <div class="equation-editor">
+                        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                            <label style="margin-bottom:0"><input type="radio" name="scaleMode" value="auto" checked>
+                                Automática</label>
+                            <label style="margin-bottom:0"><input type="radio" name="scaleMode" value="fixed">
+                                Fixa</label>
+                        </div>
+                        <div id="fixedScaleControls" style="display:none">
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <div style="flex:1">
+                                    <div class="slider-header"><span>Métros por grade</span><span class="slider-value"
+                                            id="metersPerGridValue">1.0</span></div>
+                                    <input type="range" id="metersPerGrid" min="0.1" max="5" step="0.1" value="1.0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hint">Escolha escala automática (ajustada ao alcance da trajetória) ou fixa (cada grade
+                        = X metros).</div>
+                </div>
+
+                <!-- Equation Editor (for custom equations) -->
+                <div class="control-group" id="customEquationsGroup" style="display: none;">
+                    <label><i class="fas fa-code"></i> Equações Personalizadas</label>
+                    <div class="equation-editor">
+                        <div class="equation-row">
+                            <div class="equation-label">x(t) =</div><input type="text" id="equationX"
+                                value="v0 * Math.cos(theta) * t" placeholder="Ex: v0 * Math.cos(theta) * t + noise">
+                        </div>
+                        <div class="equation-row">
+                            <div class="equation-label">y(t) =</div><input type="text" id="equationY"
+                                value="v0 * Math.sin(theta) * t" placeholder="Ex: v0 * Math.sin(theta) * t + noise">
+                        </div>
+                    </div>
+                    <div class="hint">Use: v0, theta (rad), a, omega, gamma, t, noise. Apenas operadores matemáticos e
+                        Math.* são permitidos.</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="simulateBtn"><i class="fas fa-play"></i> Simular
+                        Movimento</button>
+                    <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-redo"></i> Reiniciar</button>
+                    <button class="btn btn-success" id="exportBtn"><i class="fas fa-download"></i> Exportar
+                        Dados</button>
+                </div>
+            </div>
+
+            <!-- Visualization Panel -->
+            <div class="visualization-panel">
+                <div class="panel-title"><i class="fas fa-chart-line"></i> Trajetória do Movimento</div>
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="motionCanvas"></canvas>
+                    <div id="bugMarker" class="bug-marker">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div id="canvasTooltip" class="canvas-tooltip"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Panel - CORRIGIDO -->
+        <div class="stats-panel">
+            <div class="panel-title"><i class="fas fa-chart-bar"></i> Estatísticas do Movimento</div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="statDistance">0.00</div>
+                    <div class="stat-label">Distância (m)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statDisplacement">0.00</div>
+                    <div class="stat-label">Deslocamento (m)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statAvgSpeed">0.00</div>
+                    <div class="stat-label">Velocidade Média (m/s)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statMaxSpeed">0.00</div>
+                    <div class="stat-label">Velocidade Máx (m/s)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Points Table - CORRIGIDO -->
+        <div class="data-panel">
+            <div class="panel-title"><i class="fas fa-table"></i> Pontos da Trajetória (x, y) vs Tempo</div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tempo (s)</th>
+                            <th>Posição X (m)</th>
+                            <th>Posição Y (m)</th>
+                            <th>Velocidade (m/s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <tr>
+                            <td colspan="4" class="empty-data">Execute uma simulação para visualizar os dados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canvas and context
+        let canvas, ctx, canvasContainer;
+        let trajectoryData = [];
+        let isAnimating = false;
+        let animationId = null;
+        let bugMarker;
+        let tooltip;
+
+        // Keep last computed scale (pixels per meter) for axis labeling
+        let lastScale = null;
+
+        // Physical parameters
+        let params = {
+            v0: 2.0,
+            theta: 45,
+            a: 0.5,
+            omega: 1.0,
+            gamma: 0.1, // damping
+            noiseAmp: 0.0,
+            duration: 10,
+            steps: 20
+        };
+
+        // === Initialization ===
+        function init() {
+            canvas = document.getElementById('motionCanvas');
+            ctx = canvas.getContext('2d');
+            canvasContainer = document.getElementById('canvasContainer');
+            bugMarker = document.getElementById('bugMarker');
+            tooltip = document.getElementById('canvasTooltip');
+
+            updateCanvasSize();
+            window.addEventListener('resize', updateCanvasSize);
+
+            initControls();
+            initListeners();
+
+            drawGrid();
+        }
+
+        function updateCanvasSize() {
+            const container = canvas.parentElement;
+            const ratio = window.devicePixelRatio || 1;
+            const cssWidth = container.clientWidth;
+            const cssHeight = container.clientHeight;
+            canvas.style.width = cssWidth + 'px';
+            canvas.style.height = cssHeight + 'px';
+            canvas.width = Math.max(1, Math.floor(cssWidth * ratio));
+            canvas.height = Math.max(1, Math.floor(cssHeight * ratio));
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            drawGrid();
+            if (trajectoryData.length) drawTrajectory(1);
+        }
+
+        function initControls() {
+            // sliders
+            const vel = document.getElementById('initialVelocity');
+            const velVal = document.getElementById('velocityValue');
+            vel.addEventListener('input', () => { params.v0 = parseFloat(vel.value); velVal.textContent = params.v0.toFixed(1); updateEquations(); });
+
+            const ang = document.getElementById('initialAngle');
+            const angVal = document.getElementById('angleValue');
+            ang.addEventListener('input', () => { params.theta = parseFloat(ang.value); angVal.textContent = params.theta; updateEquations(); });
+
+            const dur = document.getElementById('simulationDuration');
+            const durVal = document.getElementById('durationValue');
+            dur.addEventListener('input', () => { params.duration = parseInt(dur.value); durVal.textContent = params.duration; });
+
+            const steps = document.getElementById('timeSteps');
+            const stepsVal = document.getElementById('stepsValue');
+            steps.addEventListener('input', () => { params.steps = parseInt(steps.value); stepsVal.textContent = params.steps; });
+
+            const acc = document.getElementById('acceleration');
+            const accVal = document.getElementById('accelerationValue');
+            acc.addEventListener('input', () => { params.a = parseFloat(acc.value); accVal.textContent = params.a.toFixed(1); updateEquations(); });
+
+            const freq = document.getElementById('frequency');
+            const freqVal = document.getElementById('frequencyValue');
+            freq.addEventListener('input', () => { params.omega = parseFloat(freq.value); freqVal.textContent = params.omega.toFixed(1); updateEquations(); });
+
+            const damp = document.getElementById('damping');
+            const dampVal = document.getElementById('dampingValue');
+            damp.addEventListener('input', () => { params.gamma = parseFloat(damp.value); dampVal.textContent = params.gamma.toFixed(2); updateEquations(); });
+
+            const noise = document.getElementById('noiseAmplitude');
+            const noiseVal = document.getElementById('noiseValue');
+            noise.addEventListener('input', () => { params.noiseAmp = parseFloat(noise.value); noiseVal.textContent = params.noiseAmp.toFixed(2); });
+
+            // scale mode
+            document.getElementsByName('scaleMode').forEach(r => r.addEventListener('change', () => {
+                document.getElementById('fixedScaleControls').style.display = (document.querySelector('input[name=scaleMode]:checked').value === 'fixed') ? 'block' : 'none';
+                drawGrid();
+            }));
+
+            const metersPerGrid = document.getElementById('metersPerGrid');
+            const metersPerGridValue = document.getElementById('metersPerGridValue');
+            metersPerGrid.addEventListener('input', () => { metersPerGridValue.textContent = parseFloat(metersPerGrid.value).toFixed(2); drawGrid(); });
+
+            updateEquations();
+            updateParameterVisibility();
+        }
+
+        function initListeners() {
+            document.getElementById('motionType').addEventListener('change', () => { updateEquations(); updateParameterVisibility(); });
+            document.getElementById('simulateBtn').addEventListener('click', startSimulation);
+            document.getElementById('resetBtn').addEventListener('click', resetSimulation);
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+
+            // tooltip
+            canvas.addEventListener('mousemove', onCanvasMouseMove);
+            canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+        }
+
+        function updateParameterVisibility() {
+            const mt = document.getElementById('motionType').value;
+            document.getElementById('accelerationContainer').style.display = (mt === 'uniformAcceleration') ? 'block' : 'none';
+            document.getElementById('frequencyContainer').style.display = (mt === 'harmonicOscillation' || mt === 'circularUniform' || mt === 'dampedOscillation') ? 'block' : 'none';
+            document.getElementById('dampingContainer').style.display = (mt === 'dampedOscillation') ? 'block' : 'none';
+            document.getElementById('customEquationsGroup').style.display = (mt === 'custom') ? 'block' : 'none';
+        }
+
+        // Provide safe validation for custom equations
+        function isEquationSafe(eq) {
+            if (!eq || typeof eq !== 'string') return false;
+
+            // Lista de termos proibidos
+            const forbidden = ['window', 'document', 'eval', 'Function', 'constructor',
+                'fetch', 'XMLHttpRequest', 'alert', 'prompt', 'confirm',
+                'setTimeout', 'setInterval', 'localStorage', 'sessionStorage',
+                'import', 'export', 'require', 'process', 'global', 'this'];
+
+            const lower = eq.toLowerCase();
+            for (const f of forbidden) {
+                if (lower.includes(f.toLowerCase())) {
+                    console.warn('Termo proibido encontrado:', f);
+                    return false;
+                }
+            }
+
+            // Permitir operadores matemáticos e funções Math
+            const allowed = /^[0-9+\-*/().,\sA-Za-z_%!<>=&|^~?:]+$/;
+            const cleaned = eq.replace(/math\.[a-z]+/gi, '').replace(/\s+/g, '');
+
+            if (!allowed.test(cleaned)) {
+                console.warn('Caracteres não permitidos na equação:', eq);
+                return false;
+            }
+
+            return true;
+        }
+
+        function updateEquations() {
+            const motionType = document.getElementById('motionType').value;
+            let eqXText = '', eqYText = '';
+            switch (motionType) {
+                case 'linearUniform':
+                    eqXText = `v0 * Math.cos(theta) * t`;
+                    eqYText = `v0 * Math.sin(theta) * t`;
+                    break;
+                case 'uniformAcceleration':
+                    eqXText = `v0 * Math.cos(theta) * t + 0.5 * a * Math.cos(theta) * t * t`;
+                    eqYText = `v0 * Math.sin(theta) * t + 0.5 * a * Math.sin(theta) * t * t`;
+                    break;
+                case 'harmonicOscillation':
+                    eqXText = `Math.cos(omega * t)`;
+                    eqYText = `Math.sin(omega * t)`;
+                    break;
+                case 'circularUniform':
+                    eqXText = `v0 * Math.cos(omega * t)`;
+                    eqYText = `v0 * Math.sin(omega * t)`;
+                    break;
+                case 'dampedOscillation':
+                    // low damping: amplitude ~ v0, exponential decay
+                    eqXText = `v0 * Math.exp(-gamma * t) * Math.cos(omega * t)`;
+                    eqYText = `v0 * Math.exp(-gamma * t) * Math.sin(omega * t)`;
+                    break;
+                case 'custom':
+                    // don't override
+                    return;
+            }
+            document.getElementById('equationX').value = eqXText;
+            document.getElementById('equationY').value = eqYText;
+        }
+
+        // Create evaluator function for equations
+        function makeEvaluator(eq) {
+            if (!isEquationSafe(eq)) {
+                console.warn('Equação considerada insegura:', eq);
+                return () => 0;
+            }
+
+            try {
+                // Cria uma função segura usando Function constructor
+                const func = new Function('t', 'v0', 'theta', 'a', 'omega', 'gamma', 'noise', 'Math',
+                    `'use strict';
+                    try {
+                        return (${eq});
+                    } catch(e) {
+                        console.error("Erro na expressão:", e);
+                        return 0;
+                    }`);
+                return func;
+            } catch (e) {
+                console.error('Falha ao compilar equação:', eq, e);
+                return () => 0;
+            }
+        }
+
+        // Fluctuations: perturb only ONE random parameter each timestep
+        function getPerturbedParams(noiseAmp) {
+            if (noiseAmp === 0) {
+                return {
+                    v0: params.v0,
+                    theta: params.theta,
+                    a: params.a,
+                    omega: params.omega,
+                    gamma: params.gamma
+                };
+            }
+
+            // Choose ONE random parameter to perturb
+            const paramsList = ['v0', 'theta', 'a', 'omega', 'gamma'];
+            const randomIndex = Math.floor(Math.random() * paramsList.length);
+            const paramToPerturb = paramsList[randomIndex];
+
+            // Perturb function
+            const perturb = (value) => {
+                const r = Math.random();
+                return value * (1 + noiseAmp * (2 * r - 1));
+            };
+
+            // Return all params with only one perturbed
+            return {
+                v0: paramToPerturb === 'v0' ? perturb(params.v0) : params.v0,
+                theta: paramToPerturb === 'theta' ? perturb(params.theta) : params.theta,
+                a: paramToPerturb === 'a' ? perturb(params.a) : params.a,
+                omega: paramToPerturb === 'omega' ? perturb(params.omega) : params.omega,
+                gamma: paramToPerturb === 'gamma' ? perturb(params.gamma) : params.gamma
+            };
+        }
+
+        function calculateTrajectory() {
+            trajectoryData = [];
+            const totalSteps = params.duration * params.steps;
+            const dt = 1 / params.steps;
+
+            const eqXRaw = document.getElementById('equationX').value;
+            const eqYRaw = document.getElementById('equationY').value;
+            const evalX = makeEvaluator(eqXRaw);
+            const evalY = makeEvaluator(eqYRaw);
+
+            let prevX = 0, prevY = 0;
+            let totalDistance = 0;
+            let maxSpeed = 0;
+
+            for (let i = 0; i <= totalSteps; i++) {
+                const t = i * dt;
+
+                // Get perturbed parameters (only one random parameter affected)
+                const perturbed = getPerturbedParams(params.noiseAmp);
+
+                // Convert angle to radians
+                const thetapRad = perturbed.theta * Math.PI / 180;
+
+                // Small random noise term available to equations
+                const noiseTerm = Math.random() * params.noiseAmp;
+
+                // Evaluate equations
+                let x = 0, y = 0;
+                try {
+                    x = Number(evalX(t, perturbed.v0, thetapRad, perturbed.a, perturbed.omega, perturbed.gamma, noiseTerm, Math)) || 0;
+                } catch (e) {
+                    console.error('Erro em x(t):', e);
+                    x = 0;
+                }
+
+                try {
+                    y = Number(evalY(t, perturbed.v0, thetapRad, perturbed.a, perturbed.omega, perturbed.gamma, noiseTerm, Math)) || 0;
+                } catch (e) {
+                    console.error('Erro em y(t):', e);
+                    y = 0;
+                }
+
+                // Calculate instantaneous speed
+                let speed = 0;
+                if (i > 0) {
+                    const dx = x - prevX;
+                    const dy = y - prevY;
+                    speed = Math.sqrt(dx * dx + dy * dy) / dt;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy);
+                    maxSpeed = Math.max(maxSpeed, speed);
+                }
+
+                trajectoryData.push({
+                    t: parseFloat(t.toFixed(4)),
+                    x: parseFloat(x.toFixed(6)),
+                    y: parseFloat(y.toFixed(6)),
+                    speed: parseFloat(speed.toFixed(6))
+                });
+
+                prevX = x;
+                prevY = y;
+            }
+
+            return { totalDistance, maxSpeed };
+        }
+
+        // Draw grid with improved major/minor lines and optional fixed scale
+        function drawGrid() {
+            const ratio = window.devicePixelRatio || 1;
+            const width = canvas.width / ratio;
+            const height = canvas.height / ratio;
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const gridPx = 50; // CSS px per minor grid
+
+            // Decide scale (pixels per meter)
+            const scaleMode = document.querySelector('input[name=scaleMode]:checked').value;
+            let scale = null;
+
+            if (scaleMode === 'fixed') {
+                const metersPerGrid = parseFloat(document.getElementById('metersPerGrid').value);
+                scale = gridPx / metersPerGrid; // px per meter
+            } else {
+                // Automatic scaling based on trajectory range
+                if (trajectoryData.length > 0) {
+                    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                    trajectoryData.forEach(p => {
+                        minX = Math.min(minX, p.x);
+                        maxX = Math.max(maxX, p.x);
+                        minY = Math.min(minY, p.y);
+                        maxY = Math.max(maxY, p.y);
+                    });
+
+                    // Adicionar uma margem de 20% em cada lado
+                    const margin = 0.2;
+                    const rangeX = maxX - minX;
+                    const rangeY = maxY - minY;
+
+                    // Garantir um mínimo para evitar divisão por zero
+                    const effectiveRangeX = Math.max(rangeX, 0.1);
+                    const effectiveRangeY = Math.max(rangeY, 0.1);
+
+                    // Calcular escala para caber na área disponível, considerando a margem
+                    // Usar 90% da área disponível para deixar espaço para margens
+                    const availableWidth = width * 0.9;
+                    const availableHeight = height * 0.9;
+
+                    const scaleX = availableWidth / (effectiveRangeX * (1 + 2 * margin));
+                    const scaleY = availableHeight / (effectiveRangeY * (1 + 2 * margin));
+
+                    // A escala deve ser a menor para caber em ambas as dimensões
+                    scale = Math.min(scaleX, scaleY);
+
+                    // Limitar a escala para evitar valores extremos
+                    scale = Math.max(scale, 10);
+                    scale = Math.min(scale, 500);
+                } else {
+                    // Sem trajetória, usar escala padrão
+                    scale = 50;
+                }
+            }
+
+            lastScale = scale || 50; // Garantir que lastScale nunca seja null
+
+            // Draw minor grid
+            ctx.strokeStyle = 'rgba(226,232,240,0.9)';
+            ctx.lineWidth = 1;
+
+            // Vertical lines
+            for (let x = 0; x <= width; x += gridPx) {
+                ctx.beginPath();
+                ctx.moveTo(x + 0.5, 0);
+                ctx.lineTo(x + 0.5, height);
+                ctx.stroke();
+            }
+
+            // Horizontal lines
+            for (let y = 0; y <= height; y += gridPx) {
+                ctx.beginPath();
+                ctx.moveTo(0, y + 0.5);
+                ctx.lineTo(width, y + 0.5);
+                ctx.stroke();
+            }
+
+            // Major grid every 5 minor lines
+            ctx.strokeStyle = 'rgba(166,180,200,0.9)';
+            ctx.lineWidth = 1.6;
+            const majorEvery = 5;
+
+            // Vertical major lines
+            for (let x = 0; x <= width; x += gridPx * majorEvery) {
+                ctx.beginPath();
+                ctx.moveTo(x + 0.5, 0);
+                ctx.lineTo(x + 0.5, height);
+                ctx.stroke();
+            }
+
+            // Horizontal major lines
+            for (let y = 0; y <= height; y += gridPx * majorEvery) {
+                ctx.beginPath();
+                ctx.moveTo(0, y + 0.5);
+                ctx.lineTo(width, y + 0.5);
+                ctx.stroke();
+            }
+
+            // Draw axes
+            ctx.strokeStyle = '#4a5568';
+            ctx.lineWidth = 2;
+
+            // X-axis
+            ctx.beginPath();
+            ctx.moveTo(0, centerY + 0.5);
+            ctx.lineTo(width, centerY + 0.5);
+            ctx.stroke();
+
+            // Y-axis
+            ctx.beginPath();
+            ctx.moveTo(centerX + 0.5, 0);
+            ctx.lineTo(centerX + 0.5, height);
+            ctx.stroke();
+
+            // Axis labels
+            ctx.fillStyle = '#2d3748';
+            ctx.font = '14px Arial';
+            ctx.fillText('X', width - 20, centerY - 10);
+            ctx.fillText('Y', centerX + 10, 20);
+            ctx.fillText('0', centerX - 15, centerY + 15);
+
+            // Numeric ticks in meters using scale
+            if (scale && scale > 0) {
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#2d3748';
+
+                // X-axis ticks (positive direction)
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                for (let px = centerX + gridPx; px <= width; px += gridPx) {
+                    const meters = (px - centerX) / scale;
+                    ctx.fillText(meters.toFixed(2), px, centerY + 6);
+                }
+
+                // X-axis ticks (negative direction)
+                for (let px = centerX - gridPx; px >= 0; px -= gridPx) {
+                    const meters = (px - centerX) / scale;
+                    ctx.fillText(meters.toFixed(2), px, centerY + 6);
+                }
+
+                // Y-axis ticks (positive direction - up is negative in canvas)
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let py = centerY + gridPx; py <= height; py += gridPx) {
+                    const meters = (centerY - py) / scale;
+                    ctx.fillText(meters.toFixed(2), centerX - 8, py);
+                }
+
+                // Y-axis ticks (negative direction)
+                for (let py = centerY - gridPx; py >= 0; py -= gridPx) {
+                    const meters = (centerY - py) / scale;
+                    ctx.fillText(meters.toFixed(2), centerX - 8, py);
+                }
+            }
+        }
+
+        function drawTrajectory(animationProgress = 1) {
+            drawGrid(); // Isso já vai recalcular a escala se necessário
+            if (!trajectoryData.length) return;
+
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const scale = lastScale || 50; // Usar lastScale, com fallback para 50
+
+            // Draw trajectory line
+            ctx.beginPath();
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            const numPoints = Math.floor(trajectoryData.length * animationProgress);
+            for (let i = 0; i < numPoints; i++) {
+                const p = trajectoryData[i];
+                const x = centerX + p.x * scale;
+                const y = centerY - p.y * scale; // Note: Y axis is inverted in canvas
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+
+            // Draw starting point
+            if (numPoints > 0) {
+                const start = trajectoryData[0];
+                const sx = centerX + start.x * scale;
+                const sy = centerY - start.y * scale;
+                ctx.fillStyle = '#48bb78';
+                ctx.beginPath();
+                ctx.arc(sx, sy, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Update bug marker position
+            if (numPoints > 0) {
+                const cur = trajectoryData[numPoints - 1];
+                const cx = centerX + cur.x * scale;
+                const cy = centerY - cur.y * scale;
+
+                // Position bug marker at center
+                bugMarker.style.left = cx + 'px';
+                bugMarker.style.top = cy + 'px';
+                bugMarker.style.display = 'block';
+
+                // Add or remove moving animation based on animation progress
+                if (animationProgress < 1) {
+                    bugMarker.classList.add('moving');
+                } else {
+                    bugMarker.classList.remove('moving');
+                }
+            }
+        }
+
+        function onCanvasMouseMove(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const x = (evt.clientX - rect.left);
+            const y = (evt.clientY - rect.top);
+            const width = canvas.width / ratio;
+            const height = canvas.height / ratio;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const scale = lastScale || 50;
+
+            const mx = (x - centerX) / scale;
+            const my = (centerY - y) / scale; // Invert Y for correct coordinate system
+
+            tooltip.style.display = 'block';
+            tooltip.style.left = evt.clientX - rect.left + 'px';
+            tooltip.style.top = evt.clientY - rect.top + 'px';
+            tooltip.textContent = `x: ${mx.toFixed(3)} m, y: ${my.toFixed(3)} m`;
+        }
+
+        function updateStatistics() {
+            if (trajectoryData.length === 0) return;
+
+            const first = trajectoryData[0];
+            const last = trajectoryData[trajectoryData.length - 1];
+
+            // Calculate total distance traveled
+            let totalDistance = 0;
+            for (let i = 1; i < trajectoryData.length; i++) {
+                const dx = trajectoryData[i].x - trajectoryData[i - 1].x;
+                const dy = trajectoryData[i].y - trajectoryData[i - 1].y;
+                totalDistance += Math.sqrt(dx * dx + dy * dy);
+            }
+
+            // Calculate displacement
+            const dx = last.x - first.x;
+            const dy = last.y - first.y;
+            const displacement = Math.sqrt(dx * dx + dy * dy);
+
+            // Calculate average speed
+            const avgSpeed = totalDistance / Math.max(1e-6, last.t);
+
+            // Find maximum speed
+            let maxSpeed = 0;
+            trajectoryData.forEach(p => {
+                if (p.speed > maxSpeed) maxSpeed = p.speed;
+            });
+
+            // Update UI
+            document.getElementById('statDistance').textContent = totalDistance.toFixed(2);
+            document.getElementById('statDisplacement').textContent = displacement.toFixed(2);
+            document.getElementById('statAvgSpeed').textContent = avgSpeed.toFixed(2);
+            document.getElementById('statMaxSpeed').textContent = maxSpeed.toFixed(2);
+
+            updateDataTable();
+        }
+
+        function updateDataTable() {
+            const body = document.getElementById('dataTableBody');
+            body.innerHTML = '';
+
+            if (trajectoryData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4" class="empty-data">Execute uma simulação para visualizar os dados</td>';
+                body.appendChild(row);
+                return;
+            }
+
+            // Show every nth point to keep table manageable
+            const step = Math.max(1, Math.floor(trajectoryData.length / 30));
+
+            for (let i = 0; i < trajectoryData.length; i += step) {
+                const p = trajectoryData[i];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${p.t.toFixed(3)}</td>
+                    <td>${p.x.toFixed(6)}</td>
+                    <td>${p.y.toFixed(6)}</td>
+                    <td>${p.speed.toFixed(6)}</td>
+                `;
+                body.appendChild(row);
+            }
+        }
+
+        function animateTrajectory() {
+            let startTime = null;
+            const animationDuration = 2000; // 2 seconds
+
+            function animate(now) {
+                if (!startTime) startTime = now;
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / animationDuration, 1);
+
+                drawTrajectory(progress);
+
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    isAnimating = false;
+                    updateStatistics();
+                    // Stop bug animation at the end
+                    bugMarker.classList.remove('moving');
+                }
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function startSimulation() {
+            if (isAnimating) return;
+
+            resetSimulation();
+            isAnimating = true;
+
+            try {
+                calculateTrajectory();
+                animateTrajectory();
+            } catch (error) {
+                console.error('Erro na simulação:', error);
+                alert('Erro na simulação: ' + error.message);
+                isAnimating = false;
+            }
+        }
+
+        function resetSimulation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+
+            isAnimating = false;
+            trajectoryData = [];
+            bugMarker.style.display = 'none';
+            bugMarker.classList.remove('moving');
+            tooltip.style.display = 'none';
+
+            // Reset statistics
+            document.getElementById('statDistance').textContent = '0.00';
+            document.getElementById('statDisplacement').textContent = '0.00';
+            document.getElementById('statAvgSpeed').textContent = '0.00';
+            document.getElementById('statMaxSpeed').textContent = '0.00';
+
+            // Reset data table
+            const body = document.getElementById('dataTableBody');
+            body.innerHTML = '<tr><td colspan="4" class="empty-data">Execute uma simulação para visualizar os dados</td></tr>';
+
+            // Redraw grid
+            drawGrid();
+        }
+
+        function exportData() {
+            if (!trajectoryData.length) {
+                alert('Simule primeiro para exportar dados!');
+                return;
+            }
+
+            let csv = 'Tempo(s),Posicao_X(m),Posicao_Y(m),Velocidade(m/s)\n';
+            trajectoryData.forEach(p => {
+                csv += `${p.t.toFixed(4)},${p.x.toFixed(6)},${p.y.toFixed(6)},${p.speed.toFixed(6)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trajetoria_2d_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            updateParameterVisibility();
+            updateEquations();
+        });
+    </script>
+</body>
+
+</html>

@@ -100,6 +100,14 @@ get_header();
          descricao: "Simulação interativa de movimento retilíneo com controles de posição inicial, velocidade, aceleração e tempo e referencial.",
          categoria: "Mecânica"
       },
+      {
+         nome: "Movimento Bidimensional",
+         pasta: "movimento_bidimensional",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de movimento bidimensional de uma joaninha sobre uma superfície horizontal.",
+         categoria: "Cinemática"
+      },
    ];
 
    let simulacoesFiltradas = [...minhasSimulacoes];
