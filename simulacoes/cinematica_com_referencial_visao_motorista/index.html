@@ -3,20 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simulador de Cinemática</title>
+    <title>Cinemática com Referencial - Visão do Motorista</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
-
     <style>
       * {
         margin: 0;
@@ -32,11 +20,8 @@
         color: #333;
       }
 
-      .content {
-        padding: 2rem;
-      }
-
-      .controls-panel {
+      .controls-panel,
+      .chart-wrapper {
         background: #f8f9fa;
         border-radius: 15px;
         padding: 1rem;
@@ -68,13 +53,14 @@
         border: 2px solid #e0e0e0;
         border-radius: 8px;
         font-size: 1rem;
-        transition: all 0.3s;
       }
 
-      .control-group input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      .control-group select {
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #fff;
       }
 
       .button-group {
@@ -91,7 +77,7 @@
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.2s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -101,7 +87,28 @@
         cursor: not-allowed;
       }
 
+      .btn-primary {
+        background: #667eea;
+        color: #fff;
+      }
+
+      .btn-secondary {
+        background: #718096;
+        color: #fff;
+      }
+
+      .btn-danger {
+        background: #e53e3e;
+        color: #fff;
+      }
+
       .animation-container {
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        min-height: 300px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.12);
         background: linear-gradient(
           to bottom,
           #87ceeb 0%,
@@ -115,13 +122,51 @@
           #666 76%,
           #666 100%
         );
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 1rem;
-        min-height: 300px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .clouds {
+        position: absolute;
+        top: 20px;
+        left: -100%;
+        width: 300%;
+        height: 100px;
+      }
+
+      .cloud {
+        position: absolute;
+        background: white;
+        border-radius: 50px;
+        opacity: 0.85;
+      }
+
+      .cloud:nth-child(1) {
+        width: 80px;
+        height: 35px;
+        top: 10px;
+        left: 20%;
+      }
+
+      .cloud:nth-child(2) {
+        width: 60px;
+        height: 25px;
+        top: 40px;
+        left: 45%;
+      }
+
+      .cloud:nth-child(3) {
+        width: 70px;
+        height: 30px;
+        top: 15px;
+        left: 72%;
+      }
+
+      .grass {
+        position: absolute;
+        bottom: 30%;
+        left: -100%;
+        width: 300%;
+        height: 10%;
+        background: linear-gradient(to bottom, #90ee90, #7bc87b);
       }
 
       .road {
@@ -150,65 +195,6 @@
         transform: translateY(-50%);
       }
 
-      .grass {
-        position: absolute;
-        bottom: 30%;
-        left: -100%;
-        width: 300%;
-        height: 10%;
-        background: linear-gradient(to bottom, #90ee90, #7bc87b);
-      }
-
-      .clouds {
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 100px;
-      }
-
-      .cloud {
-        position: absolute;
-        background: white;
-        border-radius: 50px;
-        opacity: 0.8;
-        animation: float 20s infinite linear;
-      }
-
-      .cloud:nth-child(1) {
-        width: 80px;
-        height: 35px;
-        top: 10px;
-        left: 10%;
-        animation-delay: 0s;
-      }
-
-      .cloud:nth-child(2) {
-        width: 60px;
-        height: 25px;
-        top: 40px;
-        left: 50%;
-        animation-delay: -10s;
-      }
-
-      .cloud:nth-child(3) {
-        width: 70px;
-        height: 30px;
-        top: 15px;
-        left: 80%;
-        animation-delay: -5s;
-      }
-
-      @keyframes float {
-        from {
-          transform: translateX(0);
-        }
-
-        to {
-          transform: translateX(100vw);
-        }
-      }
-
       .car-container {
         position: absolute;
         bottom: 10%;
@@ -229,7 +215,6 @@
         border-radius: 10px 10px 5px 5px;
         position: absolute;
         bottom: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
       .car-top {
@@ -271,45 +256,35 @@
         right: 15px;
       }
 
-      .wheel-rim {
-        width: 8px;
-        height: 8px;
-        background: #7f8c8d;
-        border-radius: 50%;
+      .observer-container {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        left: 60%;
+        bottom: 30%;
+        z-index: 10;
+        width: 60px;
+        text-align: center;
+        transform: translateX(0);
       }
 
-      .headlight {
-        width: 8px;
-        height: 6px;
-        background: #f39c12;
-        position: absolute;
-        bottom: 18px;
-        right: 5px;
-        border-radius: 2px;
+      .observer-avatar {
+        font-size: 52px;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .selected-reference {
+        filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
       }
 
       .info-display {
         position: absolute;
-        top: 0.5px;
-        right: 0.5px;
+        top: 8px;
+        right: 8px;
         background: rgba(255, 255, 255, 0.95);
         padding: 1rem;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
+        min-width: 220px;
         z-index: 20;
-      }
-
-      .info-display h3 {
-        margin-bottom: 1rem;
-        color: #667eea;
-        font-size: 1.1rem;
-        border-bottom: 2px solid #667eea;
-        padding-bottom: 0.5rem;
       }
 
       .info-item {
@@ -322,106 +297,202 @@
       .info-label {
         font-weight: 600;
         color: #495057;
-        font-size: 0.9rem;
       }
 
       .info-value {
         font-weight: 700;
         color: #667eea;
-        font-size: 1.1rem;
       }
 
-      .chart-wrapper {
-        background: #f8f9fa;
-        padding: 0;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      }
-
-      canvas {
-        background: white;
-        border-radius: 10px;
-        padding: 1rem;
-      }
-
-      @media (max-width: 768px) {
-        body {
-          padding: 1rem;
-        }
-
-        .controls-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .button-group {
-          flex-direction: column;
-        }
-
-        button {
-          width: 100%;
-        }
-
-        .info-display {
-          position: static;
-          margin-bottom: 1rem;
-        }
-
-        .car {
-          width: 70px;
-          height: 35px;
-        }
-      }
-
-      .observer-container {
+      .driver-overlay {
         position: absolute;
-        left: 60%;
-        bottom: 30%;
-        right: 100px;
-        /* posição na calçada direita */
-        z-index: 10;
-        text-align: center;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        z-index: 14;
       }
 
-      .observer-image {
-        width: 60px;
-        /* tamanho do bonequinho */
-        height: 80px;
-        object-fit: contain;
-        /* mantém proporção da imagem */
+      .side-window-glass {
+        position: absolute;
+        inset: 7% 8% 19% 8%;
+        border-radius: 18px;
+        background: linear-gradient(
+          to bottom,
+          rgba(185, 231, 255, 0.08) 0%,
+          rgba(125, 188, 220, 0.04) 42%,
+          rgba(40, 66, 91, 0.12) 100%
+        );
+        border: 2px solid rgba(255, 255, 255, 0.1);
       }
 
-      .selected-reference {
-        animation: pulse 1.5s infinite;
-        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+      .window-top-frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10%;
+        background: linear-gradient(to bottom, #1b222d, #2b3644);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-
-        50% {
-          transform: scale(1.05);
-        }
+      .window-bottom-frame {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 22%;
+        background: linear-gradient(to bottom, #161d27, #0f141d);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      .car-container,
-      .observer-container {
-        transition: all 0.3s;
+      .window-pillar-left,
+      .window-pillar-right {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 9%;
+        background: linear-gradient(to bottom, #1c232e, #2f3946);
       }
 
-      .car-container:hover,
-      .observer-container:hover {
-        transform: scale(1.1);
-        filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.6));
+      .window-pillar-left {
+        left: 0;
+        clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .window-pillar-right {
+        right: 0;
+        clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .window-reflection {
+        position: absolute;
+        top: 12%;
+        left: 20%;
+        width: 22%;
+        height: 58%;
+        transform: skewX(-12deg);
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0.02)
+        );
+        border-radius: 6px;
+        filter: blur(0.3px);
+      }
+
+      .window-reflection.r2 {
+        left: auto;
+        right: 23%;
+        width: 14%;
+        height: 48%;
+        transform: skewX(-9deg);
+      }
+
+      .inner-door-shadow {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 22%;
+        height: 18%;
+        background: linear-gradient(
+          to top,
+          rgba(13, 18, 25, 0.35),
+          rgba(13, 18, 25, 0)
+        );
+      }
+
+      .observer-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        z-index: 13;
+      }
+
+      .observer-ground-shadow {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 24%;
+        background: linear-gradient(
+          to top,
+          rgba(10, 14, 20, 0.45),
+          rgba(10, 14, 20, 0)
+        );
+      }
+
+      .observer-silhouette {
+        position: absolute;
+        left: 4%;
+        bottom: 12%;
+        width: 90px;
+        height: 150px;
+        opacity: 0.85;
+      }
+
+      .observer-silhouette-head {
+        position: absolute;
+        top: 0;
+        left: 28px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #1e2430;
+      }
+
+      .observer-silhouette-body {
+        position: absolute;
+        top: 26px;
+        left: 8px;
+        width: 74px;
+        height: 116px;
+        background: #1a212c;
+        border-radius: 36px 36px 18px 18px;
+      }
+
+      .observer-caption {
+        position: absolute;
+        left: 14px;
+        bottom: -16px;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.88);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+      }
+
+      .animation-container.driver-view .driver-overlay {
+        opacity: 1;
+      }
+
+      .animation-container.driver-view .car-container {
+        opacity: 0;
+      }
+
+      .animation-container.observer-view .observer-overlay {
+        opacity: 1;
+      }
+
+      .animation-container.observer-view .observer-container {
+        opacity: 0;
       }
     </style>
   </head>
-
   <body>
     <div class="controls-panel">
       <div class="controls-grid">
+        <div class="control-group">
+          <label for="viewMode">Modo de Visão (antes de iniciar)</label>
+          <select id="viewMode">
+            <option value="motorista">Motorista (olhando pela janela)</option>
+            <option value="bonequinho">
+              Bonequinho (vendo o carro passar)
+            </option>
+          </select>
+        </div>
         <div class="control-group">
           <label for="posicao">Posição Inicial (m)</label>
           <input type="number" id="posicao" value="0" step="0.1" />
@@ -456,7 +527,7 @@
       </div>
     </div>
 
-    <div class="animation-container">
+    <div class="animation-container" id="animationContainer">
       <div class="clouds">
         <div class="cloud"></div>
         <div class="cloud"></div>
@@ -466,48 +537,44 @@
       <div class="road">
         <div class="road-line"></div>
       </div>
-      <!-- código do carro -->
-      <div
-        class="car-container"
-        id="carContainer"
-        onclick="selecionarReferencial('carro')"
-        style="cursor: pointer"
-      >
+
+      <div class="car-container" id="carContainer">
         <div class="car">
-          <div class="car-top">
-            <div class="car-window"></div>
-          </div>
-          <div class="car-body">
-            <div class="headlight"></div>
-          </div>
-          <div class="wheel wheel-left">
-            <div class="wheel-rim"></div>
-          </div>
-          <div class="wheel wheel-right">
-            <div class="wheel-rim"></div>
-          </div>
+          <div class="car-top"><div class="car-window"></div></div>
+          <div class="car-body"></div>
+          <div class="wheel wheel-left"></div>
+          <div class="wheel wheel-right"></div>
         </div>
       </div>
 
-      <!-- código do boneco -->
-      <div
-        class="observer-container"
-        id="observerContainer"
-        onclick="selecionarReferencial('pessoa')"
-        style="cursor: pointer"
-      >
-        <img
-          src="./boneco.png"
-          alt="Observador"
-          width="20"
-          class="observer-image"
-        />
+      <div class="observer-container" id="observerContainer">
+        <div class="observer-avatar" id="observerAvatar">🧍</div>
+      </div>
+
+      <div class="driver-overlay">
+        <div class="side-window-glass"></div>
+        <div class="window-top-frame"></div>
+        <div class="window-bottom-frame"></div>
+        <div class="window-pillar-left"></div>
+        <div class="window-pillar-right"></div>
+        <div class="window-reflection"></div>
+        <div class="window-reflection r2"></div>
+        <div class="inner-door-shadow"></div>
+      </div>
+
+      <div class="observer-overlay">
+        <div class="observer-ground-shadow"></div>
+        <div class="observer-silhouette">
+          <div class="observer-silhouette-head"></div>
+          <div class="observer-silhouette-body"></div>
+          <div class="observer-caption">Visão do observador</div>
+        </div>
       </div>
 
       <div class="info-display">
         <div class="info-item">
           <span class="info-label">Referência:</span>
-          <span class="info-value" id="displayReferencia">🚗 Carro</span>
+          <span class="info-value" id="displayReferencia">🚗 Motorista</span>
         </div>
         <div class="info-item">
           <span class="info-label">Tempo:</span>
@@ -533,82 +600,91 @@
     </div>
 
     <script>
+      const animationContainer = document.getElementById("animationContainer");
       const carContainer = document.getElementById("carContainer");
+      const observerContainer = document.getElementById("observerContainer");
+      const observerAvatar = document.getElementById("observerAvatar");
+      const roadEl = document.querySelector(".road");
+      const grassEl = document.querySelector(".grass");
+      const cloudsEl = document.querySelector(".clouds");
       const grafico = document.getElementById("grafico");
       const pauseBtn = document.getElementById("pauseBtn");
+      const viewModeSelect = document.getElementById("viewMode");
+
       let chart;
       let intervalo;
       let pausado = false;
-
       let tempo = [];
       let posicoes = [];
       let velocidades = [];
       let aceleracoes = [];
       let t = 0;
-      let dt = 0.05;
+      const dt = 0.05;
       let duracao, s0, v0, a;
-      let toPx = null; // função p/ converter posição (m) -> pixel
-      let sMin = 0,
-        sMax = 0; // extremos de posição no intervalo [0, duração]
+      let toPx = null;
       let referencialAtual = "carro";
+      let modoVisaoAtual = "motorista";
 
-      function selecionarReferencial(tipo) {
-        referencialAtual = tipo;
-
-        // Remover destaque anterior
-        document
-          .getElementById("carContainer")
-          .classList.remove("selected-reference");
-        document
-          .getElementById("observerContainer")
-          .classList.remove("selected-reference");
-
-        // Adicionar destaque no selecionado
-        if (tipo === "carro") {
-          document
-            .getElementById("carContainer")
-            .classList.add("selected-reference");
-          document.getElementById("displayReferencia").innerHTML = "🚗";
+      function aplicarVisualReferencial() {
+        if (modoVisaoAtual === "motorista") {
+          animationContainer.classList.add("driver-view");
+          animationContainer.classList.remove("observer-view");
+          document.getElementById("displayReferencia").textContent =
+            "🚗 Motorista";
+          carContainer.classList.add("selected-reference");
+          observerContainer.classList.remove("selected-reference");
         } else {
-          document
-            .getElementById("observerContainer")
-            .classList.add("selected-reference");
-          document.getElementById("displayReferencia").innerHTML = "🧍";
+          animationContainer.classList.remove("driver-view");
+          animationContainer.classList.add("observer-view");
+          document.getElementById("displayReferencia").textContent =
+            "🧍 Observador";
+          observerContainer.classList.add("selected-reference");
+          carContainer.classList.remove("selected-reference");
         }
-
-        // Aviso se simulação estiver rodando
-        if (t > 0 && t < duracao)
-          alert("⚠️ Reinicie a simulação para aplicar o novo referencial!");
       }
 
-      // Definir carro como referência inicial ao carregar
-      window.addEventListener("load", function () {
-        selecionarReferencial("carro");
-      });
+      function definirModoVisao(valorModo) {
+        modoVisaoAtual =
+          valorModo === "bonequinho" ? "bonequinho" : "motorista";
+        referencialAtual = modoVisaoAtual === "motorista" ? "carro" : "pessoa";
+        aplicarVisualReferencial();
+        if (t > 0 && t < duracao) {
+          alert("⚠️ Reinicie a simulação para aplicar o novo referencial!");
+        }
+      }
 
-      function atualizarDisplay(s, v, a, tempo) {
+      function atualizarDisplay(s, v, aAtual, tempoAtual) {
         document.getElementById("displayTempo").textContent =
-          tempo.toFixed(1) + " s";
+          tempoAtual.toFixed(1) + " s";
         document.getElementById("displayPosicao").textContent =
           s.toFixed(2) + " m";
         document.getElementById("displayVelocidade").textContent =
           v.toFixed(2) + " m/s";
         document.getElementById("displayAceleracao").textContent =
-          a.toFixed(2) + " m/s²";
+          aAtual.toFixed(2) + " m/s²";
       }
 
-      function extremosDeS(s0, v0, a, T) {
-        const valores = [s0, s0 + v0 * T + 0.5 * a * T * T];
-        if (a !== 0) {
-          const tVertice = -v0 / a;
+      function extremosDeS(sInicial, vInicial, aceleracao, T) {
+        const valores = [
+          sInicial,
+          sInicial + vInicial * T + 0.5 * aceleracao * T * T,
+        ];
+        if (aceleracao !== 0) {
+          const tVertice = -vInicial / aceleracao;
           if (tVertice > 0 && tVertice < T) {
-            valores.push(s0 + v0 * tVertice + 0.5 * a * tVertice * tVertice);
+            valores.push(
+              sInicial +
+                vInicial * tVertice +
+                0.5 * aceleracao * tVertice * tVertice,
+            );
           }
         }
         return { min: Math.min(...valores), max: Math.max(...valores) };
       }
 
       function iniciarSimulacao() {
+        definirModoVisao(viewModeSelect.value);
+
         s0 = parseFloat(document.getElementById("posicao").value);
         v0 = parseFloat(document.getElementById("velocidade").value);
         a = parseFloat(document.getElementById("aceleracao").value);
@@ -620,28 +696,24 @@
         aceleracoes = [];
         t = 0;
 
-        // === MAPEAMENTO FÍSICO -> TELA ANCORADO EM s = 0 ===
         const parent = carContainer.parentElement;
-        const pxZero = 50; // borda esquerda visível da estrada
+        const pxZero = 50;
         const pxMax = Math.max(parent.offsetWidth - 12, pxZero + 1);
         const carWidth = carContainer.offsetWidth || 100;
-
-        // pega extremos da posição no intervalo [0, duração]
         const ext = extremosDeS(s0, v0, a, duracao);
         const sMaxPos = Math.max(0, ext.max);
-
-        // escala em px/m só considerando parte positiva (assim s<0 fica fora da tela)
         const pxPerMeter = (pxMax - pxZero - carWidth) / Math.max(sMaxPos, 1);
-
-        // função de conversão (para-choque dianteiro em px)
         toPx = (s) => pxZero + s * pxPerMeter;
-
-        // coloca o carro no ponto inicial (se s0<0, fica fora da tela à esquerda)
         carContainer.style.left = `${toPx(s0) - carWidth}px`;
+
+        roadEl.style.transform = "translateX(0)";
+        grassEl.style.transform = "translateX(0)";
+        cloudsEl.style.transform = "translateX(0)";
+        observerContainer.style.transform = "translateX(0)";
 
         clearInterval(intervalo);
         pauseBtn.disabled = false;
-        pauseBtn.innerHTML = "⏸️ Pausar";
+        pauseBtn.textContent = "⏸️ Pausar";
         pausado = false;
 
         if (chart) chart.destroy();
@@ -654,36 +726,33 @@
               {
                 label: "Posição (m)",
                 data: posicoes,
-                yAxisID: "yPos", // <-- eixo exclusivo
+                yAxisID: "yPos",
                 borderColor: "#667eea",
                 backgroundColor: "rgba(102,126,234,0.15)",
                 fill: true,
                 tension: 0.25,
                 borderWidth: 3,
-                pointRadius: 0, // sem marcadores (menos poluição)
-                pointHoverRadius: 3,
+                pointRadius: 0,
               },
               {
                 label: "Velocidade (m/s)",
                 data: velocidades,
-                yAxisID: "yVel", // <-- eixo exclusivo
+                yAxisID: "yVel",
                 borderColor: "#2ecc71",
                 fill: false,
                 tension: 0.25,
                 borderWidth: 3,
                 pointRadius: 0,
-                pointHoverRadius: 3,
               },
               {
                 label: "Aceleração (m/s²)",
                 data: aceleracoes,
-                yAxisID: "yAcc", // <-- eixo exclusivo
+                yAxisID: "yAcc",
                 borderColor: "#e74c3c",
                 fill: false,
                 tension: 0.25,
                 borderWidth: 3,
                 pointRadius: 0,
-                pointHoverRadius: 3,
               },
             ],
           },
@@ -691,46 +760,24 @@
             animation: false,
             normalized: true,
             responsive: true,
-            maintainAspectRatio: false, // respeita o height do canvas
-            layout: { padding: 8 },
-            interaction: { mode: "index", intersect: false },
-            plugins: {
-              legend: {
-                position: "top",
-                labels: { usePointStyle: true, padding: 12 },
-              },
-              tooltip: {
-                backgroundColor: "rgba(0,0,0,0.85)",
-                padding: 10,
-                cornerRadius: 8,
-              },
-            },
+            maintainAspectRatio: false,
             scales: {
-              x: {
-                grid: { color: "rgba(0,0,0,0.07)" },
-                ticks: { autoSkip: true, maxTicksLimit: 12 }, // menos rótulos no eixo x
-              },
+              x: { ticks: { autoSkip: true, maxTicksLimit: 12 } },
               yPos: {
                 type: "linear",
                 position: "left",
                 title: { display: true, text: "Posição (m)" },
-                grid: { color: "rgba(102,126,234,0.1)" },
               },
               yVel: {
                 type: "linear",
                 position: "right",
                 title: { display: true, text: "Velocidade (m/s)" },
-                grid: { drawOnChartArea: false }, // evita poluição visual
+                grid: { drawOnChartArea: false },
               },
               yAcc: {
                 type: "linear",
                 position: "right",
                 title: { display: true, text: "Aceleração (m/s²)" },
-                ticks: {
-                  // aceleração costuma ser constante — mantém uma janela útil
-                  suggestedMin: -2,
-                  suggestedMax: 2,
-                },
                 grid: { drawOnChartArea: false },
               },
             },
@@ -738,6 +785,7 @@
         });
 
         atualizarDisplay(s0, v0, a, 0);
+        aplicarVisualReferencial();
         rodarSimulacao();
       }
 
@@ -752,73 +800,42 @@
           const s = s0 + v0 * t + 0.5 * a * t * t;
           const v = v0 + a * t;
 
-          // CALCULAR POSIÇÃO DO BONEQUINHO EM METROS:
-          const observerContainer =
-            document.getElementById("observerContainer");
-          const img = observerContainer.querySelector(".observer-image");
           const parent = carContainer.parentElement;
-          const observerPxPosition = parent.offsetWidth * 0.75; // 60% da largura (left: 60%)
-          const pxZero = 0; // origem do sistema de coordenadas
+          const observerPxPosition = parent.offsetWidth * 0.75;
           const observerMetersPosition =
-            (observerPxPosition - pxZero) / (toPx(1) - toPx(0)); // converte px → metros
+            observerPxPosition / (toPx(1) - toPx(0));
 
-          // VIRAR O BONEQUINHO quando o carro passar dele:
-          if (referencialAtual === "carro") {
-            console.log("s, observer: ", s, observerMetersPosition);
-            // No referencial do observador, vira baseado na posição do carro
-            if (s > observerMetersPosition) img.src = "./boneco_invert.png";
-            else img.src = "./boneco.png";
-          } else {
-            // No referencial do carro, mantém a orientação normal
-            const currentTransform = observerContainer.style.transform
-              .replace(/scaleX\([^)]*\)/g, "")
-              .trim();
-            if (s > observerMetersPosition) img.src = "./boneco.png";
-            else img.src = "./boneco_invert.png";
-          }
+          if (s > observerMetersPosition) observerAvatar.textContent = "🚶";
+          else observerAvatar.textContent = "🧍";
 
           tempo.push(t.toFixed(2));
           posicoes.push(parseFloat(s.toFixed(2)));
           velocidades.push(parseFloat(v.toFixed(2)));
           aceleracoes.push(a);
 
-          // === LÓGICA DE MOVIMENTO CONFORME REFERENCIAL ===
           if (referencialAtual === "pessoa") {
-            // REFERENCIAL DO OBSERVADOR: só o carro se move
             const frontX = toPx(s);
             const leftX = frontX - (carContainer.offsetWidth || 100);
             carContainer.style.left = `${leftX}px`;
-
-            // Estrada e bonequinho parados (posição original)
-            document.querySelector(".road").style.transform = "translateX(0)";
-            document.querySelector(".grass").style.transform = "translateX(0)";
-            document.getElementById("observerContainer").style.transform =
-              "translateX(0)";
+            roadEl.style.transform = "translateX(0)";
+            grassEl.style.transform = "translateX(0)";
+            cloudsEl.style.transform = "translateX(0)";
+            observerContainer.style.transform = "translateX(0)";
           } else {
-            // REFERENCIAL DO CARRO: carro parado, resto se move
             const frontX = toPx(s);
             const leftX = frontX - (carContainer.offsetWidth || 100);
-
-            // Carro fica parado em uma posição fixa (ex: centro da tela)
-            const parent = carContainer.parentElement;
             const posicaoFixaCarro =
               parent.offsetWidth / 2 - (carContainer.offsetWidth || 100);
             carContainer.style.left = `${posicaoFixaCarro}px`;
 
-            // Calcula quanto a estrada deve "andar para trás"
             const deslocamento = -(leftX - posicaoFixaCarro);
-
-            // Move a estrada, grama e bonequinho para trás
-            document.querySelector(".road").style.transform =
-              `translateX(${deslocamento}px)`;
-            document.querySelector(".grass").style.transform =
-              `translateX(${deslocamento}px)`;
-            document.getElementById("observerContainer").style.transform =
-              `translateX(${deslocamento}px)`;
+            roadEl.style.transform = `translateX(${deslocamento}px)`;
+            grassEl.style.transform = `translateX(${deslocamento}px)`;
+            cloudsEl.style.transform = `translateX(${deslocamento * 0.35}px)`;
+            observerContainer.style.transform = `translateX(${deslocamento}px)`;
           }
 
           atualizarDisplay(s, v, a, t);
-
           chart.data.labels = tempo;
           chart.data.datasets[0].data = posicoes;
           chart.data.datasets[1].data = velocidades;
@@ -833,10 +850,10 @@
         if (!pausado) {
           clearInterval(intervalo);
           pausado = true;
-          pauseBtn.innerHTML = "▶️ Continuar";
+          pauseBtn.textContent = "▶️ Continuar";
         } else {
           pausado = false;
-          pauseBtn.innerHTML = "⏸️ Pausar";
+          pauseBtn.textContent = "⏸️ Pausar";
           rodarSimulacao();
         }
       }
@@ -844,19 +861,31 @@
       function reiniciar() {
         clearInterval(intervalo);
         carContainer.style.left = "50px";
-
-        document.querySelector(".road").style.transform = "translateX(0)";
-        document.querySelector(".grass").style.transform = "translateX(0)";
-        document.getElementById("observerContainer").style.transform =
-          "translateX(0)";
-
+        roadEl.style.transform = "translateX(0)";
+        grassEl.style.transform = "translateX(0)";
+        cloudsEl.style.transform = "translateX(0)";
+        observerContainer.style.transform = "translateX(0)";
         if (chart) chart.destroy();
         pauseBtn.disabled = true;
-        pauseBtn.innerHTML = "⏸️ Pausar";
+        pauseBtn.textContent = "⏸️ Pausar";
         pausado = false;
         t = 0;
         atualizarDisplay(0, 0, 0, 0);
+        definirModoVisao(viewModeSelect.value);
+        aplicarVisualReferencial();
       }
+
+      window.addEventListener("load", () => {
+        definirModoVisao(viewModeSelect.value);
+        viewModeSelect.addEventListener("change", () => {
+          if (t > 0 && t < duracao) {
+            viewModeSelect.value = modoVisaoAtual;
+            alert("⚠️ Reinicie a simulação para trocar o modo de visão.");
+            return;
+          }
+          definirModoVisao(viewModeSelect.value);
+        });
+      });
     </script>
   </body>
 </html>
