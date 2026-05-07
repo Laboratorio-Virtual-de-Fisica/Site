@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Frequência Interativa</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: #e9ecef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .card {
+        display: flex;
+        width: 1000px;
+        height: 420px;
+        border-radius: 20px;
+        background: #f8f9fa;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .left {
+        flex: 1;
+        background: #efefef;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .formula {
+        font-size: 48px;
+        margin-bottom: 40px;
+      }
+
+      .slider-box {
+        width: 80%;
+        text-align: center;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
+
+      .right {
+        flex: 1;
+        position: relative;
+      }
+
+      /* círculo */
+      .circle {
+        position: absolute;
+        left: 60px;
+        top: 140px;
+        width: 80px;
+        height: 80px;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+      }
+
+      /* ponto circular */
+      .point {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: #0d6efd;
+        border-radius: 50%;
+      }
+
+      canvas {
+        position: absolute;
+        left: 180px;
+        top: 80px;
+      }
+
+      .freq {
+        position: absolute;
+        bottom: 20px;
+        left: 200px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <div class="left">
+        <div class="formula">f = 1 / T</div>
+
+        <div class="slider-box">
+          <p>T = <span id="Tvalue">2.00</span></p>
+          <input
+            type="range"
+            id="sliderT"
+            min="0.5"
+            max="5"
+            step="0.1"
+            value="2"
+          />
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="circle"></div>
+        <div class="point" id="point"></div>
+
+        <canvas id="grafico" width="600" height="250"></canvas>
+
+        <div class="freq">f = <span id="freqValue">0.50</span> Hz</div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("grafico");
+      const ctx = canvas.getContext("2d");
+
+      const slider = document.getElementById("sliderT");
+      const Ttext = document.getElementById("Tvalue");
+      const freqText = document.getElementById("freqValue");
+      const point = document.getElementById("point");
+
+      let tempo = 0;
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let T = parseFloat(slider.value);
+        let f = 1 / T;
+
+        Ttext.innerText = T.toFixed(2);
+        freqText.innerText = f.toFixed(2);
+
+        const centerY = canvas.height / 2;
+
+        // linha central (eixo)
+        ctx.beginPath();
+        ctx.moveTo(0, centerY);
+        ctx.lineTo(canvas.width, centerY);
+        ctx.strokeStyle = "#ccc";
+        ctx.stroke();
+
+        // onda
+        ctx.beginPath();
+
+        for (let x = 0; x < canvas.width; x++) {
+          let t = x / 100;
+          let y = Math.sin(2 * Math.PI * f * t + tempo);
+          let posY = centerY + y * 50;
+
+          ctx.lineTo(x, posY);
+        }
+
+        ctx.strokeStyle = "#0d6efd";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // ponto sincronizado com a onda
+        let waveX = 0;
+        let waveY = centerY + Math.sin(tempo) * 50;
+
+        ctx.beginPath();
+        ctx.arc(waveX, waveY, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "#0d6efd";
+        ctx.fill();
+
+        // movimento circular
+        let raio = 30;
+        let cx = 100;
+        let cy = 180;
+
+        let px = cx + raio * Math.cos(tempo);
+        let py = cy + raio * Math.sin(tempo);
+
+        point.style.left = px + "px";
+        point.style.top = py + "px";
+
+        // linha pontilhada (período)
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(200, centerY + 70);
+        ctx.lineTo(350, centerY + 70);
+        ctx.strokeStyle = "#666";
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillText("T", 270, centerY + 90);
+
+        tempo += 0.05;
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
