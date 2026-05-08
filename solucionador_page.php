@@ -108,6 +108,14 @@ get_header();
          descricao: "Simulação interativa de movimento bidimensional de uma joaninha sobre uma superfície horizontal.",
          categoria: "Cinemática"
       },
+      {
+         nome: "Frequência de uma Onda",
+         pasta: "frenquencia-onda",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de frequência de uma onda.",
+         categoria: "Cinemática"
+      },
    ];
 
    let simulacoesFiltradas = [...minhasSimulacoes];

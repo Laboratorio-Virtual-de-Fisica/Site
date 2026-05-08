@@ -44,25 +44,181 @@
       }
       #animacao {
         position: relative;
-        height: 100px;
-        background: #e0e0e0;
-        border-radius: 4px;
+        min-height: 300px;
+        background: linear-gradient(
+          to bottom,
+          #87ceeb 0%,
+          #87ceeb 60%,
+          #90ee90 60%,
+          #90ee90 70%,
+          #666 70%,
+          #666 100%
+        );
+        border-radius: 15px;
         overflow: hidden;
         margin-bottom: 1rem;
+        box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
       }
-      .bola {
+      .grass {
         position: absolute;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+        bottom: 30%;
+        left: 0;
+        right: 0;
+        height: 10%;
+        background: linear-gradient(to bottom, #90ee90, #7bc87b);
       }
-      #bola1 {
-        background: #1f77b4;
+      .road {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 30%;
+        background: #4a4a4a;
+        border-top: 3px solid #666;
+      }
+      .road-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: repeating-linear-gradient(
+          to right,
+          #ffd700 0px,
+          #ffd700 40px,
+          transparent 40px,
+          transparent 80px
+        );
+      }
+      .road-line-1 {
+        top: 33%;
+      }
+      .road-line-2 {
+        top: 66%;
+      }
+      .clouds {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 100px;
+      }
+      .cloud {
+        position: absolute;
+        background: white;
+        border-radius: 50px;
+        opacity: 0.8;
+        animation: float 20s infinite linear;
+      }
+      .cloud:nth-child(1) {
+        width: 80px;
+        height: 35px;
+        top: 10px;
+        left: 10%;
+        animation-delay: 0s;
+      }
+      .cloud:nth-child(2) {
+        width: 60px;
+        height: 25px;
+        top: 40px;
+        left: 50%;
+        animation-delay: -10s;
+      }
+      .cloud:nth-child(3) {
+        width: 70px;
+        height: 30px;
         top: 15px;
+        left: 80%;
+        animation-delay: -5s;
       }
-      #bola2 {
-        background: #d62728;
-        top: 55px;
+      @keyframes float {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(100vw);
+        }
+      }
+      .car-container {
+        position: absolute;
+        left: 0;
+        z-index: 10;
+      }
+      .lane-1 {
+        bottom: 18%;
+      }
+      .lane-2 {
+        bottom: 4%;
+      }
+      .car {
+        width: 100px;
+        height: 50px;
+        position: relative;
+      }
+      .car-body {
+        width: 100%;
+        height: 30px;
+        background: linear-gradient(to bottom, #e74c3c 0%, #c0392b 100%);
+        border-radius: 10px 10px 5px 5px;
+        position: absolute;
+        bottom: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      .car-top {
+        width: 60%;
+        height: 20px;
+        background: linear-gradient(to bottom, #e74c3c 0%, #c0392b 100%);
+        border-radius: 8px 8px 0 0;
+        position: absolute;
+        bottom: 42px;
+        left: 20%;
+      }
+      .car-window {
+        width: 90%;
+        height: 14px;
+        background: rgba(100, 150, 200, 0.6);
+        border-radius: 5px 5px 0 0;
+        position: absolute;
+        bottom: 3px;
+        left: 5%;
+        border: 2px solid #2c3e50;
+      }
+      .wheel {
+        width: 18px;
+        height: 18px;
+        background: #2c3e50;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 0;
+        border: 3px solid #34495e;
+      }
+      .wheel-left {
+        left: 15px;
+      }
+      .wheel-right {
+        right: 15px;
+      }
+      .wheel-rim {
+        width: 8px;
+        height: 8px;
+        background: #7f8c8d;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .headlight {
+        width: 8px;
+        height: 6px;
+        background: #f39c12;
+        position: absolute;
+        bottom: 18px;
+        right: 5px;
+        border-radius: 2px;
+      }
+      .car-secondary .car-body,
+      .car-secondary .car-top {
+        background: linear-gradient(to bottom, #3498db 0%, #2c3e50 100%);
       }
       canvas {
         background: white;
@@ -84,6 +240,10 @@
         <input type="number" id="v1" value="2" />
       </label>
       <label
+        >Aceleração 1 (m/s²)
+        <input type="number" id="a1" value="0.5" step="0.1" />
+      </label>
+      <label
         >Posição Inicial 2 (m)
         <input type="number" id="s2" value="10" />
       </label>
@@ -101,8 +261,50 @@
     <button onclick="reiniciar()">Reiniciar</button>
 
     <div id="animacao">
-      <div id="bola1" class="bola"></div>
-      <div id="bola2" class="bola"></div>
+      <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+      </div>
+      <div class="grass"></div>
+      <div class="road">
+        <div class="road-line road-line-1"></div>
+        <div class="road-line road-line-2"></div>
+      </div>
+
+      <div id="bola1" class="car-container lane-1">
+        <div class="car">
+          <div class="car-top">
+            <div class="car-window"></div>
+          </div>
+          <div class="car-body">
+            <div class="headlight"></div>
+          </div>
+          <div class="wheel wheel-left">
+            <div class="wheel-rim"></div>
+          </div>
+          <div class="wheel wheel-right">
+            <div class="wheel-rim"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="bola2" class="car-container lane-2">
+        <div class="car car-secondary">
+          <div class="car-top">
+            <div class="car-window"></div>
+          </div>
+          <div class="car-body">
+            <div class="headlight"></div>
+          </div>
+          <div class="wheel wheel-left">
+            <div class="wheel-rim"></div>
+          </div>
+          <div class="wheel wheel-right">
+            <div class="wheel-rim"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <canvas id="grafico"></canvas>
@@ -123,6 +325,7 @@
         // Captura dos dados
         const s1_0 = parseFloat(document.getElementById("s1").value);
         const v1 = parseFloat(document.getElementById("v1").value);
+        const a1 = parseFloat(document.getElementById("a1").value);
         const s2_0 = parseFloat(document.getElementById("s2").value);
         const v2 = parseFloat(document.getElementById("v2").value);
         const duracao = parseFloat(document.getElementById("duracao").value);
@@ -149,7 +352,7 @@
             return;
           }
 
-          const s1 = s1_0 + v1 * t;
+          const s1 = s1_0 + v1 * t + 0.5 * a1 * t * t;
           const s2 = s2_0 + v2 * t;
 
           tempo.push(t.toFixed(1));
