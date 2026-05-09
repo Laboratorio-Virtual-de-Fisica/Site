@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador: Soma de Vetores Bidimensional</title>
+    <style>
+        :root {
+            --bg-color: linear-gradient(135deg, #7c62d0, #5c45a0);
+            --panel-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --vec-a-color: #1f77b4;
+            --vec-b-color: #d62728;
+            --vec-r-color: #2ca02c;
+            --grid-color: #ddd;
+            --axis-color: #666;
+        }
+
+        body {
+            font-family: 'Inter', 'Roboto', sans-serif;
+            background: var(--bg-color);
+            background-attachment: fixed;
+            padding: 2rem;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .controls-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: space-between;
+            color: var(--text-color);
+        }
+
+        .vector-control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.05);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .vector-control.vec-a { border-left: 4px solid var(--vec-a-color); }
+        .vector-control.vec-b { border-left: 4px solid var(--vec-b-color); }
+        .vector-control.vec-r { border-left: 4px solid var(--vec-r-color); background: #f9fff9; }
+
+        .vector-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            width: 25px;
+        }
+
+        input[type="number"], input[type="range"] {
+            flex: 1;
+        }
+
+        input[type="number"] {
+            padding: 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-width: 80px;
+        }
+
+        .equation {
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .canvas-container {
+            background: var(--panel-bg);
+            backdrop-filter: blur(8px);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        canvas {
+            background: white;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .controls-panel {
+                flex-direction: column;
+                width: 300px;
+                flex: none;
+            }
+            .canvas-container {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simulador: Soma de Vetores Bidimensional</h1>
+
+    <div class="container">
+        <div class="controls-panel">
+            <div class="vector-control vec-a">
+                <div class="vector-title" style="color: var(--vec-a-color)">Vetor A</div>
+                <div class="input-group">
+                    <label>î (x)</label>
+                    <input type="range" id="ax-range" min="-100" max="100" value="30">
+                    <input type="number" id="ax-num" min="-100" max="100" value="30">
+                </div>
+                <div class="input-group">
+                    <label>ĵ (y)</label>
+                    <input type="range" id="ay-range" min="-100" max="100" value="40">
+                    <input type="number" id="ay-num" min="-100" max="100" value="40">
+                </div>
+                <div class="equation" id="eq-a">A = 30î + 40ĵ</div>
+            </div>
+
+            <div class="vector-control vec-b">
+                <div class="vector-title" style="color: var(--vec-b-color)">Vetor B</div>
+                <div class="input-group">
+                    <label>î (x)</label>
+                    <input type="range" id="bx-range" min="-100" max="100" value="50">
+                    <input type="number" id="bx-num" min="-100" max="100" value="50">
+                </div>
+                <div class="input-group">
+                    <label>ĵ (y)</label>
+                    <input type="range" id="by-range" min="-100" max="100" value="-20">
+                    <input type="number" id="by-num" min="-100" max="100" value="-20">
+                </div>
+                <div class="equation" id="eq-b">B = 50î - 20ĵ</div>
+            </div>
+
+            <div class="vector-control vec-r">
+                <div class="vector-title" style="color: var(--vec-r-color)">Vetor Resultante (R = A + B)</div>
+                <div class="equation" id="eq-r">R = 80î + 20ĵ</div>
+                <div class="equation" id="mag-r">|R| = 82.46</div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="vectorCanvas" width="800" height="800"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('vectorCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const inputs = {
+            ax: { range: document.getElementById('ax-range'), num: document.getElementById('ax-num') },
+            ay: { range: document.getElementById('ay-range'), num: document.getElementById('ay-num') },
+            bx: { range: document.getElementById('bx-range'), num: document.getElementById('bx-num') },
+            by: { range: document.getElementById('by-range'), num: document.getElementById('by-num') }
+        };
+
+        const displays = {
+            eqA: document.getElementById('eq-a'),
+            eqB: document.getElementById('eq-b'),
+            eqR: document.getElementById('eq-r'),
+            magR: document.getElementById('mag-r')
+        };
+
+        let vecA = { x: 30, y: 40 };
+        let vecB = { x: 50, y: -20 };
+        let vecR = { x: 80, y: 20 };
+
+        function formatEq(name, x, y) {
+            const signY = y < 0 ? '-' : '+';
+            return `${name} = ${x}î ${signY} ${Math.abs(y)}ĵ`;
+        }
+
+        function syncInputs(source, target, isX, isA) {
+            let val = parseInt(source.value);
+            if (isNaN(val)) val = 0;
+            target.value = val;
+            
+            if (isA) {
+                if (isX) vecA.x = val; else vecA.y = val;
+            } else {
+                if (isX) vecB.x = val; else vecB.y = val;
+            }
+            
+            updateSimulation();
+        }
+
+        // Add event listeners to all inputs
+        ['ax', 'ay', 'bx', 'by'].forEach(key => {
+            const isX = key.endsWith('x');
+            const isA = key.startsWith('a');
+            inputs[key].range.addEventListener('input', (e) => syncInputs(e.target, inputs[key].num, isX, isA));
+            inputs[key].num.addEventListener('input', (e) => syncInputs(e.target, inputs[key].range, isX, isA));
+        });
+
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            const headlen = 10; // length of head in pixels
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(toX, toY);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawDashedLine(fromX, fromY, toX, toY, color) {
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]); // reset
+        }
+
+        function updateSimulation() {
+            vecR.x = vecA.x + vecB.x;
+            vecR.y = vecA.y + vecB.y;
+
+            // Update equations
+            displays.eqA.innerText = formatEq('A', vecA.x, vecA.y);
+            displays.eqB.innerText = formatEq('B', vecB.x, vecB.y);
+            displays.eqR.innerText = formatEq('R', vecR.x, vecR.y);
+            displays.magR.innerText = `|R| = ${Math.sqrt(vecR.x*vecR.x + vecR.y*vecR.y).toFixed(2)}`;
+
+            draw();
+        }
+
+        function draw() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            // Calculate dynamic scale to fit all vectors
+            const margin = 40; // padding inside canvas
+            
+            // Find max absolute values to determine bounds
+            const maxX = Math.max(Math.abs(vecA.x), Math.abs(vecB.x), Math.abs(vecR.x), Math.abs(vecA.x + vecB.x), 10);
+            const maxY = Math.max(Math.abs(vecA.y), Math.abs(vecB.y), Math.abs(vecR.y), Math.abs(vecA.y + vecB.y), 10);
+            
+            // Limit bounds to at least a certain size so small vectors don't make the grid huge
+            const maxBound = Math.max(maxX, maxY);
+            const scale = (Math.min(width, height) / 2 - margin) / maxBound;
+
+            const cx = width / 2;
+            const cy = height / 2;
+
+            // Draw grid and axes
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--grid-color');
+            ctx.lineWidth = 1;
+
+            // Grid lines
+            const step = Math.max(10, Math.ceil(maxBound / 10) * 10); // Dynamic step
+            
+            for(let i = 0; i <= maxBound; i += step) {
+                // Vertical lines
+                ctx.beginPath(); ctx.moveTo(cx + i*scale, 0); ctx.lineTo(cx + i*scale, height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx - i*scale, 0); ctx.lineTo(cx - i*scale, height); ctx.stroke();
+                // Horizontal lines
+                ctx.beginPath(); ctx.moveTo(0, cy + i*scale); ctx.lineTo(width, cy + i*scale); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, cy - i*scale); ctx.lineTo(width, cy - i*scale); ctx.stroke();
+            }
+
+            // Axes
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--axis-color');
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(width, cy); ctx.stroke(); // X axis
+            ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, height); ctx.stroke(); // Y axis
+
+            // Labels
+            ctx.fillStyle = '#444';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText('X', width - 20, cy - 10);
+            ctx.fillText('Y', cx + 10, 20);
+
+            // Vector drawing helpers (Note: y is inverted in canvas)
+            const getX = (val) => cx + val * scale;
+            const getY = (val) => cy - val * scale;
+
+            const colorA = getComputedStyle(document.body).getPropertyValue('--vec-a-color');
+            const colorB = getComputedStyle(document.body).getPropertyValue('--vec-b-color');
+            const colorR = getComputedStyle(document.body).getPropertyValue('--vec-r-color');
+
+            // Parallelogram lines (dashed)
+            drawDashedLine(getX(vecA.x), getY(vecA.y), getX(vecR.x), getY(vecR.y), colorB);
+            drawDashedLine(getX(vecB.x), getY(vecB.y), getX(vecR.x), getY(vecR.y), colorA);
+
+            // Draw Vectors
+            drawArrow(cx, cy, getX(vecA.x), getY(vecA.y), colorA);
+            drawArrow(cx, cy, getX(vecB.x), getY(vecB.y), colorB);
+            drawArrow(cx, cy, getX(vecR.x), getY(vecR.y), colorR);
+        }
+
+        // Initial draw
+        updateSimulation();
+
+        // Handle window resize for responsiveness
+        window.addEventListener('resize', () => {
+            const container = document.querySelector('.canvas-container');
+            if (window.innerWidth < 768) {
+                canvas.width = container.clientWidth - 32;
+                canvas.height = canvas.width;
+            } else {
+                canvas.width = 800;
+                canvas.height = 800;
+            }
+            draw();
+        });
+        window.dispatchEvent(new Event('resize'));
+    </script>
+</body>
+</html>
