@@ -116,6 +116,14 @@ get_header();
          descricao: "Simulação interativa de frequência de uma onda.",
          categoria: "Cinemática"
       },
+      {
+         nome: "Soma de Vetores Bidimensional",
+         pasta: "soma_de_vetores",
+         arquivo: "index.html",
+         imagem: "thumb.png",
+         descricao: "Simulação interativa de soma de vetores bidimensionais.",
+         categoria: "Vetores"
+      }
    ];
 
    let simulacoesFiltradas = [...minhasSimulacoes];
